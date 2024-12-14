@@ -4,7 +4,7 @@
 
 ## 1 変数と値
 
-変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, if, else, until, for, to, step, function, return）は変数名として使用できません。
+変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, if, then, else, until, for, to, step, function, return）は変数名として使用できません。
 
 - 例: n, sum, Tokuten
 
