@@ -7,16 +7,8 @@
 deno run -A DNCL3.example.js bmi
 ```
 
-※ todo 以下は未実装です
-- 配列
-- input
-- 複数行で記述するif
-- while
-- do
-- until
-- for
-- function
-- return
+※ TODO: 下記は未実装です
+- 配列 / input / 複数行if / while / do / until / for / function / return
 
 ## 1 変数と値
 
