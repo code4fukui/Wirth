@@ -2,6 +2,22 @@
 
 高等学校におけるアルゴリズムやプログラムに関する教育では，採用されるプログラミング言語は多様で，プログラミングの実習時間も異なります。このような事情を考慮し，手順記述言語 (DNCL3) を定義します。
 
+- 例: BMI計算 [examples/bmi.dncl3](examples/bmi.dncl3)
+```sh
+deno run -A DNCL3.example.js bmi
+```
+
+※ todo 以下は未実装です
+- 配列
+- input
+- 複数行で記述するif
+- while
+- do
+- until
+- for
+- function
+- return
+
 ## 1 変数と値
 
 変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, and, or, not, if, then, else, while, do, until, for, to, step, function, return）は変数名として使用できません。

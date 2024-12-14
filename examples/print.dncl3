@@ -1,0 +1,4 @@
+print 15 #コメント
+print "a" + (3 + 5) + "b"
+print 10 // 3 + "kg"
+print 1, "abc", 30
