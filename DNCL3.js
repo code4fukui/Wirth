@@ -5,6 +5,14 @@ const reserved = [
 
 const isNumber = (c) => "0123456789".indexOf(c) >= 0;
 const isOperator = (c) => "+-*/%=!<>,".indexOf(c) >= 0;
+const isUpperAlphabet = (c) => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c) >= 0;
+
+const isConstantName = (s) => {
+  for (const c of s) {
+    if (!isUpperAlphabet(c) && c != "_") return false;
+  }
+  return true;
+};
 
 export class DNCL3 {
   constructor(s, callbackoutput) {
@@ -276,6 +284,7 @@ export class DNCL3 {
         const op = this.getToken();
         if (op.type != "operator" || op.operator != "=") throw new Error("代入は変数の後に = で続ける必要があります");
         const val = this.getExpression();
+        if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
         this.vars[token2.name] = val;
 
         const op2 = this.getToken();
