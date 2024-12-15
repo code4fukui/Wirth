@@ -7,10 +7,18 @@ const isNumber = (c) => "0123456789".indexOf(c) >= 0;
 const isOperator = (c) => "+-*/%=!<>,".indexOf(c) >= 0;
 
 export class DNCL3 {
-  constructor(s) {
+  constructor(s, callbackoutput) {
     this.s = s;
     this.p = 0;
     this.vars = {};
+    this.callbackoutput = callbackoutput;
+  }
+  output(s) {
+    if (this.callbackoutput) {
+      this.callbackoutput(s);
+    } else {
+      console.log(s);
+    }
   }
   getChar() {
     const res = this.s[this.p];
@@ -261,7 +269,7 @@ export class DNCL3 {
         }
         if (op.operator != ",") throw new Error("表示はコンマ区切りのみ対応しています");
       }
-      console.log(res.join(" "));
+      this.output(res.join(" "));
     } else if (token.type == "var") {
       let token2 = token;
       for (;;) {
