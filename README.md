@@ -12,7 +12,7 @@ deno run -A DNCL3.example.js bmi
 
 ## 1 変数と値
 
-変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, and, or, not, if, then, else, while, do, until, for, to, step, function, return）は変数名として使用できません。
+変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, and, or, not, if, else, while, do, until, for, to, step, function, return）は変数名として使用できません。
 
 - 例: n, sum, Tokuten
 
@@ -125,36 +125,24 @@ deno run -A DNCL3.example.js bmi
 
 《一般形》
 ```
-if 〈条件〉 then {
+if 〈条件〉 {
    〈処理〉
 }
 ```
 
 例:
 ```
-if x < 3 then {
+if x < 3 {
   x = x + 1
   y = y - 1
 }
-```
-
-〈処理〉が 1 行しかない場合は，次のように全体を1行で書くこともできます。
-
-《一般形》
-```
-if 〈条件〉 then 〈処理〉
-```
-
-例:
-```
-if x < 3 then x = x + 1
 ```
 
 〈条件〉の値が真のときにある処理を実行し，〈条件〉の値が偽のときに別の処理を実行する場合は，次のように『else』を組み合わせて指定します。
 
 《一般形》
 ```
-if 〈条件〉 then {
+if 〈条件〉 {
   〈処理 1〉
 } else {
   〈処理 2〉
@@ -163,32 +151,18 @@ if 〈条件〉 then {
 
 例:
 ```
-if x < 3 then {
+if x < 3 {
   x = x + 1
 } else {
   x = x - 1
 }
 ```
 
-改行位置によって実行結果が変わらないため，各処理が1行で書ける場合には，次のように書くこともあります。
-
-《一般形》
-```
-if 〈条件〉 then 〈処理 1〉
-else 〈処理 2〉
-```
-
-例:
-```
-if x < 3 then x = x + 1
-else x = x - 1
-```
-
 条件分岐の中で複数の条件で実行する処理を切り替えたい場合は，次のように『else if』を使って条件を追加します。
 
 《一般形》
 ```
-if 〈条件 1〉 then {
+if 〈条件 1〉 {
   〈処理 1〉
 } else if 〈条件 2〉 {
   〈処理 2〉
@@ -199,29 +173,13 @@ if 〈条件 1〉 then {
 
 例:
 ```
-if x == 3 then {
+if x == 3 {
   x = x + 1
-} else if y > 2 then {
+} else if y > 2 {
   y = y + 1
 } else {
   y = y - 1
 }
-```
-
-改行位置によって実行結果が変わらないため，各処理が1行で書ける場合には，次のように書くこともあります。
-
-《一般形》
-```
-if 〈条件 1〉 { 〈処理 1〉 }
-else if 〈条件 2〉 { 〈処理 2〉 }
-else { 〈処理 3〉 }
-```
-
-例:
-```
-if x == 3 then x = x + 1
-else if y > 2 then y = y + 1
-else y = y - 1
 ```
 
 ### 5.2 条件繰返し文
