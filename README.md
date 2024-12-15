@@ -2,7 +2,7 @@
 
 高等学校におけるアルゴリズムやプログラムに関する教育では，採用されるプログラミング言語は多様で，プログラミングの実習時間も異なります。このような事情を考慮し，[DNCL](https://github.com/code4fukui/DNCL)、[DNCL2](https://github.com/code4fukui/DNCL2)を踏まえた、手順記述言語 (DNCL3) を定義します。
 
-- 例: BMI計算 [examples/bmi.dncl3](examples/bmi.dncl3)
+- 例: BMI計算 [examples/bmi.dncl](examples/bmi.dncl)
 ```sh
 deno run -A DNCL3.example.js bmi
 ```
