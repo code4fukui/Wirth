@@ -8,7 +8,7 @@ deno run -A DNCL3.example.js bmi
 ```
 
 ※ TODO: 下記は未実装です
-- DNCL演算子対応(現在はJavaScript準拠) / 配列 / input / while / do / until / for / function / return
+- 配列 / input / while / do / until / for / function / return
 
 ## 1 変数と値
 
@@ -112,6 +112,7 @@ deno run -A DNCL3.example.js bmi
 - 例: kosu % 2 == 0 or kosu < 0 （kosu が偶数か負の値なら真となります。）
 - 例: not kosu > 75 （kosu が 75 より大きくなければ真となります。）
 - 例: kosu > 12 and not kosu < 27 でない は，kosu > 12 and (not kosu < 27) と同じです。
+- 例: not kosu > 12 and kosu < 27 でない は，(not kosu > 12) and kosu < 27 と同じです。
 - 例: kosu == 0 or kosu > 12 and kosu < 27 は，kosu == 0 or (kosu > 12 and kosu < 27) と同じです。（『and』が先に実行されるため。）
 
 ## 5 制御文

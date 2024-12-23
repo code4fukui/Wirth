@@ -134,19 +134,48 @@ export class DNCL3 {
         return res;
       }
       const v2 = this.getValue();
-      if (typeof res == "string" || typeof v2 == "string") throw new Error("文字列では使用できない演算子です");
-      if (op.operator == "*") {
-        res *= v2;
-      } else if (op.operator == "/") {
-        res /= v2;
-      } else if (op.operator == "%") {
-        res %= v2;
-      } else if (op.operator == "//") {
-        res = Math.floor(res / v2);
+      const o = op.operator;
+      if (o != "*" && o != "/" && o != "%" && o != "//") throw new Error("非対応の演算子が使われています: " + o);
+      res = {
+        type: "BinaryExpression",
+        left: res,
+        operator: o,
+        right: v2,
+      };
+    }
+  }
+  getExpression() {
+    let res = this.getExpression1();
+    for (;;) {
+      const op = this.getToken();
+      if (op.type != "operator" || op.operator == ",") {
+        this.backToken(op);
+        return res;
+      }
+      const v2 = this.getExpression1();
+      if (op.operator == "+") {
+        res = {
+          type: "BinaryExpression",
+          left: res,
+          operator: "+",
+          right: v2,
+        };
+      } else {
+        if (typeof res == "string" || typeof v2 == "string") throw new Error("文字列では使用できない演算子です");
+        if (op.operator == "-") {
+          res = {
+            type: "BinaryExpression",
+            left: res,
+            operator: "-",
+            right: v2,
+          };
+        } else {
+          throw new Error("未対応の演算子です : " + op.operator);
+        }
       }
     }
   }
-  parseExpression() {
+  parseExpression0() {
     let startp = this.p;
     for (;;) {
       const token = this.getToken(true);
@@ -168,12 +197,15 @@ export class DNCL3 {
       return res;
     }
     if (t1.type == "num" || t1.type == "string") {
-      return t1.value;
+      return {
+        type: "Literal",
+        value: t1.value,
+      };
     } else if (t1.type == "var") {
-      if (this.vars[t1.name] === undefined) {
-        throw new Error("変数 " + t1.name + " は、未定義です");
-      }
-      return this.vars[t1.name];
+      return {
+        type: "Identifier",
+        name: t1.name,
+      };
     } else {
       throw new Error("式ではないものが指定されています : " + t1.type);
     }
@@ -195,24 +227,15 @@ export class DNCL3 {
       return v1;
     }
     const v2 = this.getValue();
-    if (op.operator == "==") {
-      return v1 == v2;
-    } else if (op.operator == "!=") {
-      return v1 != v2;
-    } else {
-      if (typeof v1 == "string" || typeof v2 == "string") throw new Error("文字列の比較は == と != のみ使えます");
-      if (op.operator == ">") {
-        return v1 > v2;
-      } else if (op.operator == "<") {
-        return v1 < v2;
-      } else if (op.operator == ">=") {
-        return v1 >= v2;
-      } else if (op.operator == "<=") {
-        return v1 <= v2;
-      } else {
-        throw new Error("条件式で未対応の演算子です : " + op.operator);
-      }
+    if (["==", "!=", ">", "<", ">=", ">=", "<="].indexOf(op.operator) == -1) {
+      throw new Error("条件式で未対応の演算子です : " + op.operator);
     }
+    return {
+      type: "BinaryExpression",
+      left: v1,
+      operator: op.operator,
+      right: v2,
+    };
   }
   getConditionValue() {
     const chknot = this.getToken();
@@ -223,7 +246,15 @@ export class DNCL3 {
       this.backToken(chknot);
     }
     const n = this.getConditionValue1();
-    return flg ? n : !n;
+    if (flg) {
+      return n;
+    } else {
+      return {
+        type: "UnaryExpression",
+        operator: "not",
+        argument: n,
+      };
+    }
   }
   getConditionAnd() {
     let res = this.getConditionValue();
@@ -235,7 +266,12 @@ export class DNCL3 {
       }
       const v2 = this.getConditionValue();
       if (op.type == "and") {
-        res &&= v2;
+        res = {
+          type: "BinaryExpression",
+          left: res,
+          operator: "and",
+          right: v2,
+        };
       } else {
         throw new Error("未対応の演算子です : " + op.operator);
       }
@@ -251,7 +287,12 @@ export class DNCL3 {
       }
       const v2 = this.getConditionAnd();
       if (op.type == "or") {
-        res ||= v2;
+        res = {
+          type: "BinaryExpression",
+          left: res,
+          operator: "or",
+          right: v2,
+        };
       } else {
         throw new Error("未対応の演算子です : " + op.operator);
       }
@@ -268,7 +309,7 @@ export class DNCL3 {
     if (token.type == "print") {
       const res = [];
       for (;;) {
-        res.push(this.parseExpression());
+        res.push(this.getExpression());
         const op = this.getToken();
         if (op.type == "eol" || op.type == "eof" || op.type == "else") {
           this.backToken(op);
@@ -304,7 +345,7 @@ export class DNCL3 {
             type: "Identifier",
             name: token2.name,
           },
-          right: this.parseExpression(),
+          right: this.getExpression(),
         });
         //if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
         //this.vars[token2.name] = val;
@@ -337,7 +378,7 @@ export class DNCL3 {
         });
       }
     } else if (token.type == "if") {
-      const cond = this.parseExpression(); //this.getCondition();
+      const cond = this.getCondition();
       const tthen = this.getToken();
       //console.log("tthen", tthen);
       if (tthen.type != "{") throw new Error(`if文の条件の後に"{"がありません`);
@@ -440,10 +481,16 @@ export class DNCL3 {
         throw new Error("初期化されていない変数 " + ast.name + " が使われました");
       }
       return this.vars[ast.name];
+    } else if (ast.type == "UnaryExpression") {
+      const n = this.calcExpression(ast.argument);
+      return !n;
     } else if (ast.type == "BinaryExpression" || ast.type == "LogicalExpression") {
       const n = this.calcExpression(ast.left);
       const m = this.calcExpression(ast.right);
       const op = ast.operator;
+      if (typeof n == "string" || typeof m == "string") {
+        if (op != "+" && op != "==" && op != "!=") throw new Error("文字列では使用できない演算子です: " + op);
+      }
       if (op == "+") {
         return n + m;
       } else if (op == "-") {
@@ -452,6 +499,10 @@ export class DNCL3 {
         return n * m;
       } else if (op == "/") {
         return n / m;
+      } else if (op == "%") {
+        return n % m;
+      } else if (op == "//") {
+        return Math.floor(n / m);
       } else if (op == "==") {
         return n == m;
       } else if (op == "!=") {
@@ -464,15 +515,15 @@ export class DNCL3 {
         return n > m;
       } else if (op == ">=") {
         return n >= m;
-      } else if (op == "&&") {
+      } else if (op == "and") {
         return n && m;
-      } else if (op == "||") {
+      } else if (op == "or") {
         return n || m;
       } else {
         throw new Error("対応していない演算子が使われました");
       }
     } else {
-      throw new Error("対応していない expression type が使われました。 " + cmd.type);
+      throw new Error("対応していない expression type が使われました。 " + ast.type);
     }
   }
 }
