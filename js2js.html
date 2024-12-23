@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>JavaScript → AST → JavaScript</title>
+</head><body>
+<h1>JavaScript → AST → JavaScript</h1>
+<main>
+<div class=diveditor id=divprog></div>
+<div class=diveditor id=divast></div>
+<div class=diveditor id=divprog2></div>
+</main>
+
+<a href=https://github.com/code4fukui/DNCL3/>src on GitHub</a>
+
+<style>
+h1 {
+  margin: 0;
+}
+.diveditor {
+  width: calc(33% - .5em);
+  padding: .1em;
+  display: inline-block;
+  height: calc(100vh - 6em);
+}
+a {
+  color: gray !important;
+}
+</style>
+
+<script type="module">
+import { parseModule } from "https://code4fukui.github.io/acorn-es/parseModule.js";
+import escodegen from "https://code4fukui.github.io/escodegen/escodegen.js";
+import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
+
+
+export const makeEditor = (div, language) => {
+  const editor = monaco.editor.create(div, {
+    language,
+    autoIndent: true,
+    //autoIndent: "none",
+    //formatOnPaste: true,
+    //formatOnType: true,
+
+    suggestOnTriggerCharacters: false,  // トリガーキャラクターでの補完を無効化
+    acceptSuggestionOnEnter: 'off',     // Enterでの補完選択を無効化
+    parameterHints: false,              // パラメータヒントを無効化
+    quickSuggestions: false,            // 自動的に補完候補を表示しない
+    inlineSuggest: { enabled: false },  // インライン補完を無効化
+    
+    tabSize: 2,
+    minimap: { enabled: false },
+    //overflow: "auto",
+    automaticLayout: true,
+    theme: "vs-dark",
+  });
+  window.addEventListener("resize", () => {
+    editor.layout();
+  });
+  return editor;
+};
+
+const prog = makeEditor(divprog, "javascript");
+const ast = makeEditor(divast, "JSON");
+const prog2 = makeEditor(divprog2, "javascript");
+
+const removeStartEnd = (json) => {
+  for (const name in json) {
+    const v = json[name];
+    if (typeof v == "object") {
+      removeStartEnd(v);
+    } else if (name == "start" || name == "end") {
+      delete json[name];
+    }
+  }
+};
+
+const onchange = () => {
+  const src = prog.getValue();
+  try {
+    const astjson = parseModule(src);
+    removeStartEnd(astjson);
+    ast.setValue(JSON.stringify(astjson, null, 2));
+    prog2.setValue(escodegen.generate(astjson));
+  } catch (e) {
+    console.log(e);
+    //ast.setValue(JSON.stringify(e, null, 2));
+    ast.setValue(e.toString());
+    prog2.setValue("");
+  }
+};
+
+//prog.onDidChangeModelContent = onchange; // なぜか初回のみ
+let bkval = null;
+setInterval(() => {
+  const txt = prog.getValue();
+  if (bkval == txt) return;
+  onchange();
+  bkval = txt;
+}, 500);
+
+const firstprog = `const height = 176;
+const weight = 64;
+const height_m = height / 100;
+const bmi = weight / (height_m * height_m);
+console.log("BMIは", bmi);
+if (bmi < 18.5) { console.log("低体重"); }
+if (bmi >= 18.5 && bmi < 25.0) { console.log("普通体重"); }
+if (bmi >= 25.0 && bmi < 30.0) { console.log("肥満（１度）"); }
+if (bmi >= 30.0 && bmi < 35.0) { console.log("肥満（２度）"); }
+if (bmi >= 35.0 && bmi < 40.0) { console.log("肥満（３度）"); }
+if (bmi >= 40.0) { console.log("肥満（４度）"); }
+`;
+
+prog.setValue(firstprog);
+onchange();
+
+</script>
+
+</body></html>
