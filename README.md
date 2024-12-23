@@ -8,7 +8,7 @@ deno run -A DNCL3.example.js bmi
 ```
 
 ※ TODO: 下記は未実装です
-- 配列 / input / 複数行if / while / do / until / for / function / return
+- DNCL演算子対応(現在はJavaScript準拠) / 配列 / input / while / do / until / for / function / return
 
 ## 1 変数と値
 
@@ -29,12 +29,13 @@ deno run -A DNCL3.example.js bmi
 
 ## 2 表示文
 
-『print』を使って，表示文で数値や文字列や変数の値を表示します。複数の値を表示する場合は『,』で区切って並べます。
+『print』を使って，表示文で数値や文字列や変数の値を表示します。複数の値を表示する場合は『,』で区切って並べます。何も指定しないと1行空きます。
 
 - 例: print n （nが15のとき「15」と表示されます。）
 - 例: print "整いました" （「整いました」と表示されます。）
 - 例: print kosu, "個見つかった" （kosu が 3 のとき，「3 個見つかった」と表示されます。）
 - 例: print "(", x, "，", y, ")" （x が 5，y が −1 のとき，「(5，-1)」と表示されます。）
+- 例: print （1行空きます。）
 
 ## 3 代入文
 

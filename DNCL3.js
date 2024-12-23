@@ -1,3 +1,5 @@
+import { parseModule } from "https://code4fukui.github.io/acorn-es/parseModule.js";
+
 const reserved = [
   "print", "input", "if", "then", "else", "while", "do", "until", "for", "to", "step", "function", "return",
   "and", "or", "not",
@@ -20,6 +22,7 @@ export class DNCL3 {
     this.p = 0;
     this.vars = {};
     this.callbackoutput = callbackoutput;
+    this.parse();
   }
   output(s) {
     if (this.callbackoutput) {
@@ -33,7 +36,7 @@ export class DNCL3 {
     this.p++;
     return res;
   }
-  getToken() {
+  getToken(reteol = false) {
     const STATE_FIRST = 0;
     const STATE_WORD = 1;
     const STATE_STRING = 2;
@@ -46,9 +49,10 @@ export class DNCL3 {
     for (;;) {
       const c = this.getChar();
       if (state == STATE_FIRST) {
-        if (c == " " || c == "\t") continue;
-        else if (c == "\n") {
+        if (reteol && c == "\n") {
           return { pos, type: "eol" };
+        } else if (c == " " || c == "\t" || c == "\n") {
+          continue;
         } else if (c === undefined) {
           return { pos, type: "eof" };
         } else if (c == "#") {
@@ -142,24 +146,16 @@ export class DNCL3 {
       }
     }
   }
-  getExpression() {
-    let res = this.getExpression1();
+  parseExpression() {
+    let startp = this.p;
     for (;;) {
-      const op = this.getToken();
-      if (op.type != "operator" || op.operator == ",") {
-        this.backToken(op);
-        return res;
-      }
-      const v2 = this.getExpression1();
-      if (op.operator == "+") {
-        res += v2;
-      } else {
-        if (typeof res == "string" || typeof v2 == "string") throw new Error("文字列では使用できない演算子です");
-        if (op.operator == "-") {
-          res -= v2;
-        } else {
-          throw new Error("未対応の演算子です : " + op.operator);
-        }
+      const token = this.getToken(true);
+      if (token.operator == "," || token.type == "{" || token.type == "}" || token.type == "eof" || token.type == "eol") {
+        this.backToken(token);
+        const exp = this.s.substring(startp, this.p) || '""';
+        //console.log(exp);
+        const ast = parseModule(exp);
+        return ast.body[0].expression;
       }
     }
   }
@@ -261,58 +257,133 @@ export class DNCL3 {
       }
     }
   }
-  runCommand() {
+  parseCommand(body) {
     const token = this.getToken();
-    //console.log("runCommand", token);
+    //console.log("parseCommand", token);
     if (token.type == "eof") return false;
+    if (token.type == "}") {
+      this.backToken(token);
+      return false;
+    }
     if (token.type == "print") {
       const res = [];
       for (;;) {
-        const n = this.getExpression();
-        res.push(n);
+        res.push(this.parseExpression());
         const op = this.getToken();
         if (op.type == "eol" || op.type == "eof" || op.type == "else") {
           this.backToken(op);
           break;
         }
-        if (op.operator != ",") throw new Error("表示はコンマ区切りのみ対応しています");
+        if (op.operator != ",") {
+          this.backToken(op);
+          break;
+          //throw new Error("表示はコンマ区切りのみ対応しています");
+        }
       }
-      this.output(res.join(" "));
+      body.push({
+        type: "ExpressionStatement",
+        expression: {
+          type: "CallExpression",
+          callee: {
+            type: "Identifier",
+            name: "print",
+          },
+          arguments: res,
+        },
+      });
     } else if (token.type == "var") {
       let token2 = token;
+      const res = [];
       for (;;) {
         const op = this.getToken();
         if (op.type != "operator" || op.operator != "=") throw new Error("代入は変数の後に = で続ける必要があります");
-        const val = this.getExpression();
-        if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
-        this.vars[token2.name] = val;
+        res.push({
+          type: "AssignmentExpression",
+          operator: "=",
+          left: {
+            type: "Identifier",
+            name: token2.name,
+          },
+          right: this.parseExpression(),
+        });
+        //if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
+        //this.vars[token2.name] = val;
 
         const op2 = this.getToken();
         if (op2.type == "eol" || op2.type == "eof") {
           this.backToken(op2);
           break;
         }
-        if (op2.operator != ",") throw new Error("代入はコンマ区切りのみ対応しています");
+        if (op2.operator != ",") {
+          //throw new Error("代入はコンマ区切りのみ対応しています");
+          this.backToken(op2);
+          break;
+        }
         token2 = this.getToken();
         if (token2.type != "var") throw new Error("コンマ区切りで続けられるのは代入文のみです");
       }
+      if (res.length == 1) {
+        body.push({
+          type: "ExpressionStatement",
+          expression: res[0],
+        });
+      } else {
+        body.push({
+          type: "ExpressionStatement",
+          expression: {
+            type: "SequenceExpression",
+            expressions: res,
+          }
+        });
+      }
     } else if (token.type == "if") {
-      const cond = this.getCondition();
+      const cond = this.parseExpression(); //this.getCondition();
       const tthen = this.getToken();
       //console.log("tthen", tthen);
-      if (tthen.type != "then") throw new Error("if文の条件の後にthenがありません");
-      if (cond) {
-        this.runCommand();
-        const telse = this.getToken();
-        //console.log("telse", telse)
-        if (telse.type != "eol" && telse.type != "eof") {
-          if (telse.type != "else") throw new Error("if文の条件の後にelseではないものがありました");
-          this.skipCommandLine();
-        } else {
-          this.backToken(telse);
+      if (tthen.type != "{") throw new Error(`if文の条件の後に"{"がありません`);
+      const then = [];
+      for (;;) {
+        if (!this.parseCommand(then)) {
+          const endblacket = this.getToken();
+          if (endblacket.type != "}") throw new Error(`"}"で閉じられていません`);
+          break;
         }
+      }
+      const telse = this.getToken();
+      if (telse.type == "else") {
+        const telse2 = this.getToken();
+        if (telse2.type != "{") throw new Error(`else文の条件の後に"{"がありません`);
+        const bodyelse = [];
+        for (;;) {
+          if (!this.parseCommand(bodyelse)) {
+            const endblacket = this.getToken();
+            if (endblacket.type != "}") throw new Error(`"}"で閉じられていません`);
+            break;
+          }
+        }
+        body.push({
+          type: "IfStatement",
+          test: cond,
+          consequent: {
+            type: "BlockStatement",
+            body: then,
+          },
+          alternate: {
+            type: "BlockStatement",
+            body: bodyelse,
+          },
+        });        
       } else {
-        this.skipCommandLine();
+        this.backToken(telse);
+        body.push({
+          type: "IfStatement",
+          test: cond,
+          consequent: {
+            type: "BlockStatement",
+            body: then,
+          },
+          alternate: null,
+        });
       }
     }
     //console.log(token);
@@ -328,7 +399,80 @@ export class DNCL3 {
       }
     }
   }
+  parse() {
+    const body = [];
+    while (this.parseCommand(body));
+    const ast = { "type": "Program", body };
+    this.ast = ast;
+  }
+  runBlock(ast) {
+    for (const cmd of ast) {
+      if (cmd.type == "ExpressionStatement") {
+        if (cmd.expression.type == "AssignmentExpression") {
+          const name = cmd.expression.left.name;
+          if (this.vars[name] !== undefined && isConstantName(name)) {
+            throw new Error("定数には再代入できません");
+          }
+          this.vars[name] = this.calcExpression(cmd.expression.right);
+        } else if (cmd.expression.type == "CallExpression") {
+          if (cmd.expression.callee.name != "print") throw new Error("print以外の関数には非対応です");
+          this.output(cmd.expression.arguments.map(i => this.calcExpression(i)).join(" "));
+        }
+      } else if (cmd.type == "IfStatement") {
+        const cond = this.calcExpression(cmd.test);
+        if (cond) {
+          this.runBlock(cmd.consequent.body);
+        } else if (cmd.alternate) {
+          this.runBlock(cmd.alternate.body);
+        }
+      }
+    }
+  }
   run() {
-    while (this.runCommand());
+    const body = this.ast.body;
+    this.runBlock(body);
+  }
+  calcExpression(ast) {
+    if (ast.type == "Literal") {
+      return ast.value;
+    } else if (ast.type == "Identifier") {
+      if (this.vars[ast.name] === undefined) {
+        throw new Error("初期化されていない変数 " + ast.name + " が使われました");
+      }
+      return this.vars[ast.name];
+    } else if (ast.type == "BinaryExpression" || ast.type == "LogicalExpression") {
+      const n = this.calcExpression(ast.left);
+      const m = this.calcExpression(ast.right);
+      const op = ast.operator;
+      if (op == "+") {
+        return n + m;
+      } else if (op == "-") {
+        return n - m;
+      } else if (op == "*") {
+        return n * m;
+      } else if (op == "/") {
+        return n / m;
+      } else if (op == "==") {
+        return n == m;
+      } else if (op == "!=") {
+        return n != m;
+      } else if (op == "<") {
+        return n < m;
+      } else if (op == "<=") {
+        return n <= m;
+      } else if (op == ">") {
+        return n > m;
+      } else if (op == ">=") {
+        return n >= m;
+      } else if (op == "&&") {
+        return n && m;
+      } else if (op == "||") {
+        return n || m;
+      } else {
+        throw new Error("対応していない演算子が使われました");
+      }
+    } else {
+      throw new Error("対応していない expression type が使われました。 " + cmd.type);
+    }
   }
 }
