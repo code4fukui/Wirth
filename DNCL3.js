@@ -393,6 +393,22 @@ export class DNCL3 {
       const telse = this.getToken();
       if (telse.type == "else") {
         const telse2 = this.getToken();
+        if (telse2.type == "if") {
+          this.backToken(telse2);
+          const bodyelse = [];
+          this.parseCommand(bodyelse);
+          console.log(bodyelse)
+          body.push({
+            type: "IfStatement",
+            test: cond,
+            consequent: {
+              type: "BlockStatement",
+              body: then,
+            },
+            alternate: bodyelse[0],
+          });        
+          return true;
+        }
         if (telse2.type != "{") throw new Error(`else文の条件の後に"{"がありません`);
         const bodyelse = [];
         for (;;) {
@@ -447,7 +463,8 @@ export class DNCL3 {
     this.ast = ast;
   }
   runBlock(ast) {
-    for (const cmd of ast) {
+    const body = ast.type == "BlockStatement" || ast.type == "Program" ? ast.body : [ast];
+    for (const cmd of body) {
       if (cmd.type == "ExpressionStatement") {
         if (cmd.expression.type == "AssignmentExpression") {
           const name = cmd.expression.left.name;
@@ -462,16 +479,15 @@ export class DNCL3 {
       } else if (cmd.type == "IfStatement") {
         const cond = this.calcExpression(cmd.test);
         if (cond) {
-          this.runBlock(cmd.consequent.body);
+          this.runBlock(cmd.consequent);
         } else if (cmd.alternate) {
-          this.runBlock(cmd.alternate.body);
+          this.runBlock(cmd.alternate);
         }
       }
     }
   }
   run() {
-    const body = this.ast.body;
-    this.runBlock(body);
+    this.runBlock(this.ast);
   }
   calcExpression(ast) {
     if (ast.type == "Literal") {
