@@ -172,7 +172,9 @@ export class DNCL3 {
             right: v2,
           };
         } else {
-          throw new Error("未対応の演算子です : " + op.operator);
+          //throw new Error("未対応の演算子です : " + op.operator);
+          this.backToken(op);
+          return res;
         }
       }
     }
@@ -234,13 +236,15 @@ export class DNCL3 {
     } else {
       this.backToken(t1);
     }
-    const v1 = this.getValue();
+    //const v1 = this.getValue();
+    const v1 = this.getExpression();
     const op = this.getToken();
     if (op.type != "operator") {
       this.backToken(op);
       return v1;
     }
-    const v2 = this.getValue();
+    //const v2 = this.getValue();
+    const v2 = this.getExpression();
     if (["==", "!=", ">", "<", ">=", ">=", "<="].indexOf(op.operator) == -1) {
       throw new Error("条件式で未対応の演算子です : " + op.operator);
     }
@@ -411,7 +415,6 @@ export class DNCL3 {
           this.backToken(telse2);
           const bodyelse = [];
           this.parseCommand(bodyelse);
-          console.log(bodyelse)
           body.push({
             type: "IfStatement",
             test: cond,
@@ -564,7 +567,6 @@ export class DNCL3 {
   runBlock(ast) {
     const body = ast.type == "BlockStatement" || ast.type == "Program" ? ast.body : [ast];
     for (const cmd of body) {
-      console.log(cmd)
       if (cmd.type == "ExpressionStatement") {
         this.runBlock(cmd.expression);
       } else if (cmd.type == "AssignmentExpression") {
@@ -613,7 +615,6 @@ export class DNCL3 {
     if (ast.type == "Literal") {
       return ast.value;
     } else if (ast.type == "Identifier") {
-      console.log("vars", this.vars)
       if (this.vars[ast.name] === undefined) {
         throw new Error("初期化されていない変数 " + ast.name + " が使われました");
       }

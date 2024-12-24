@@ -7,6 +7,8 @@
 deno run -A DNCL3.example.js bmi
 ```
 
+- ブラウザで動作するテスト環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
+
 ※ TODO: 下記は未実装です
 - 配列 / input / do / until / function / return
 
@@ -360,3 +362,4 @@ atai = 乱数() # 0以上1未満のランダムな小数をataiに代入する
 ## reference
 
 - [共通テスト手順記述標準言語 (DNCL) の説明 独立行政法人大学入試センター 2022年1月](https://www.dnc.ac.jp/albums/abm.php?d=67&f=abm00000819.pdf&n=R4_%E5%85%B1%E9%80%9A%E3%83%86%E3%82%B9%E3%83%88%E6%89%8B%E9%A0%86%E8%A8%98%E8%BF%B0%E6%A8%99%E6%BA%96%E8%A8%80%E8%AA%9E%EF%BC%88DNCL%EF%BC%89%E3%81%AE%E8%AA%AC%E6%98%8E.pdf)
+- [令和７年度大学入学共通テスト 試作問題「情報」の概要 独立行政法人大学入試センター](https://www.dnc.ac.jp/albums/abm.php?d=511&f=abm00003141.pdf&n=6-1_%E6%A6%82%E8%A6%81%E3%80%8C%E6%83%85%E5%A0%B1%E3%80%8D.pdf)
