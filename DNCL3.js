@@ -59,7 +59,7 @@ export class DNCL3 {
           return { pos, type: "eof" };
         } else if (c == "#") {
           state = STATE_COMMENT;
-        } else if (c == "{" || c == "}" || c == "(" || c == ")") {
+        } else if (c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]") {
           return { pos, type: c };
         } else if (c == '"') {
           state = STATE_STRING;
@@ -74,7 +74,7 @@ export class DNCL3 {
           state = STATE_WORD;
         }
       } else if (state == STATE_WORD) {
-        if (c == " " || c == "\t" || c == "\n" || isOperator(c) || c == ")" || c === undefined) {
+        if (c == " " || c == "\t" || c == "\n" || isOperator(c) || c == ")" || c == "[" || c == "]" || c === undefined) {
           this.p--;
           const w = res.join("");
           if (reserved.indexOf(w) >= 0) {
@@ -206,10 +206,7 @@ export class DNCL3 {
         value: t1.value,
       };
     } else if (t1.type == "var") {
-      return {
-        type: "Identifier",
-        name: t1.name,
-      };
+      return this.getVar(t1.name);
       /*
     } else if (t1.operator == "-") {
       const t2 = this.getToken();
@@ -316,6 +313,48 @@ export class DNCL3 {
       }
     }
   }
+  getVar(name) {
+    let op = this.getToken();
+
+    const array = [];
+    for (;;) {
+      if (op.type != "[") {
+        this.backToken(op);
+        break;
+      }
+      const idx = this.getExpression();
+      const op2 = this.getToken();
+      if (op2.type != "]") throw new Error("配列の要素指定が ] で囲われていません");
+      array.push(idx);
+      op = this.getToken();
+    }
+    if (array.length == 0) {
+      return {
+        type: "Identifier",
+        name: name,
+      };
+    }
+    let left = {
+      type: "MemberExpression",
+      object: {
+        type: "Identifier",
+        name: name,
+      },
+      property: array[0],
+      computed: true,
+      //optional: false,
+    };
+    for (let i = 1; i < array.length; i++) {
+      left = {
+        type: "MemberExpression",
+        object: left,
+        property: array[i],
+        computed: true,
+        //optional: false,
+      };
+    }
+    return left;
+  }
   parseCommand(body) {
     const token = this.getToken();
     //console.log("parseCommand", token);
@@ -354,16 +393,15 @@ export class DNCL3 {
       let token2 = token;
       const res = [];
       for (;;) {
+        const left = this.getVar(token2.name);
         const op = this.getToken();
         if (op.type != "operator" || op.operator != "=") throw new Error("代入は変数の後に = で続ける必要があります");
+        const right = this.getExpression();
         res.push({
           type: "AssignmentExpression",
           operator: "=",
-          left: {
-            type: "Identifier",
-            name: token2.name,
-          },
-          right: this.getExpression(),
+          left,
+          right,
         });
         //if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
         //this.vars[token2.name] = val;
@@ -564,17 +602,34 @@ export class DNCL3 {
     const ast = { "type": "Program", body };
     this.ast = ast;
   }
+  getArrayIndex(ast) {
+    const prop = this.calcExpression(ast);
+    if (prop < 0 || typeof prop == "string" && parseInt(prop).toString() != prop) {
+      throw new Error("配列には0または正の整数のみ指定可能です");
+    }
+    return prop;
+  }
   runBlock(ast) {
     const body = ast.type == "BlockStatement" || ast.type == "Program" ? ast.body : [ast];
     for (const cmd of body) {
       if (cmd.type == "ExpressionStatement") {
         this.runBlock(cmd.expression);
       } else if (cmd.type == "AssignmentExpression") {
-        const name = cmd.left.name;
+        const name = this.getVarName(cmd.left);
         if (this.vars[name] !== undefined && isConstantName(name)) {
           throw new Error("定数には再代入できません");
         }
-        this.vars[name] = this.calcExpression(cmd.right);
+        if (cmd.left.type == "Identifier") {
+          this.vars[name] = this.calcExpression(cmd.right);
+        } else if (cmd.left.type == "MemberExpression") {
+          if (this.vars[name] === undefined) {
+            this.vars[name] = [];
+          }
+          const idx = this.getArrayIndex(cmd.left.property);
+          this.vars[name][idx] = this.calcExpression(cmd.right);
+        } else {
+          throw new Error("非対応の type です " + cmd.left.type);
+        }
       } else if (cmd.type == "CallExpression") {
         if (cmd.callee.name != "print") throw new Error("print以外の関数には非対応です");
         this.output(cmd.arguments.map(i => this.calcExpression(i)).join(" "));
@@ -605,11 +660,21 @@ export class DNCL3 {
             throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
           }
         }
+      } else {
+        throw new Error("対応していない expression type が使われました。 " + cmd.type);
       }
     }
   }
   run() {
     this.runBlock(this.ast);
+    console.log(this.vars);
+  }
+  getVarName(ast) {
+    for (;;) {
+      if (ast.type == "Identifier") return ast.name;
+      else if (ast.type == "MemberExpression") ast = ast.object;
+      else throw new Error("非対応の type です " + ast.type);
+    }
   }
   calcExpression(ast) {
     if (ast.type == "Literal") {
@@ -619,6 +684,14 @@ export class DNCL3 {
         throw new Error("初期化されていない変数 " + ast.name + " が使われました");
       }
       return this.vars[ast.name];
+    } else if (ast.type == "MemberExpression") {
+      const name = this.getVarName(ast);
+      if (this.vars[name] === undefined) {
+        console.log(this.vars);
+        throw new Error("初期化されていない配列 " + name + " が使われました");
+      }
+      const idx = this.getArrayIndex(ast.property);
+      return this.vars[name][idx];
     } else if (ast.type == "UnaryExpression") {
       const n = this.calcExpression(ast.argument);
       return !n;
