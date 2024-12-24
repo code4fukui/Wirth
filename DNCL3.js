@@ -525,7 +525,7 @@ export class DNCL3 {
         test: {
           type: "BinaryExpression",
           left: astvar,
-          operator: step.value > 0 ? "<" : ">",
+          operator: step.value > 0 ? "<=" : ">=",
           right: endval,
         },
         update: {
