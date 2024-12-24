@@ -8,7 +8,7 @@ deno run -A DNCL3.example.js bmi
 ```
 
 ※ TODO: 下記は未実装です
-- 配列 / input / while / do / until / for / function / return
+- 配列 / input / do / until / function / return
 
 ## 1 変数と値
 

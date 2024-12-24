@@ -16,6 +16,8 @@ const isConstantName = (s) => {
   return true;
 };
 
+const MAX_LOOP = 1000;
+
 export class DNCL3 {
   constructor(s, callbackoutput) {
     this.s = s;
@@ -206,6 +208,18 @@ export class DNCL3 {
         type: "Identifier",
         name: t1.name,
       };
+      /*
+    } else if (t1.operator == "-") {
+      const t2 = this.getToken();
+      if (t2.type == "num") {
+        return {
+          type: "Literal",
+          value: -t2.value,
+        };
+      } else {
+        throw new Error("式ではないものが指定されています : " + t1.type);
+      }
+      */
     } else {
       throw new Error("式ではないものが指定されています : " + t1.type);
     }
@@ -442,6 +456,91 @@ export class DNCL3 {
           alternate: null,
         });
       }
+    } else if (token.type == "while") {
+      const cond = this.getCondition();
+      const tthen = this.getToken();
+      //console.log("tthen", tthen);
+      if (tthen.type != "{") throw new Error(`while文の条件の後に"{"がありません`);
+      const then = [];
+      for (;;) {
+        if (!this.parseCommand(then)) {
+          const endblacket = this.getToken();
+          if (endblacket.type != "}") throw new Error(`while文が"}"で閉じられていません`);
+          break;
+        }
+      }
+      body.push({
+        type: "WhileStatement",
+        test: cond,
+        body: {
+          type: "BlockStatement",
+          body: then,
+        }
+      });
+    } else if (token.type == "for") {
+      const varname = this.getToken();
+      if (varname.type != "var") throw new Error("for文の後は変数名が必要です");
+      const eq = this.getToken();
+      if (eq.operator != "=") throw new Error("for文の変数名の後は = が必要です");
+      const initval = this.getExpression();
+      const to = this.getToken();
+      if (to.type != "to") throw new Error("for文の初期変数設定の後は to が必要です");
+      const endval = this.getExpression();
+      const chkstep = this.getToken();
+      let step = {
+        type: "Literal",
+        value: 1,
+      };
+      if (chkstep.type != "step") {
+        this.backToken(chkstep);
+      } else {
+        step = this.getExpression();
+        if (step.type != "Literal") throw new Error("stepには数値のみ指定可能です");
+      }
+      const tthen = this.getToken();
+      if (tthen.type != "{") throw new Error(`for文の後に"{"がありません`);
+      const then = [];
+      for (;;) {
+        if (!this.parseCommand(then)) {
+          const endblacket = this.getToken();
+          if (endblacket.type != "}") throw new Error(`for文が"}"で閉じられていません`);
+          break;
+        }
+      }
+      const astvar = {
+        type: "Identifier",
+        name: varname.name,
+      };
+      body.push({
+        type: "ForStatement",
+        init: {
+          type: "AssignmentExpression",
+          operator: "=",
+          left: astvar,
+          right: initval,
+        },
+        test: {
+          type: "BinaryExpression",
+          left: astvar,
+          operator: step.value > 0 ? "<" : ">",
+          right: endval,
+        },
+        update: {
+          type: "AssignmentExpression",
+          operator: "=",
+          left: astvar,
+          right: {
+            type: "BinaryExpression",
+            left: astvar,
+            operator: step.value > 0 ? "+" : "-",
+            right: step,
+          },
+        },
+        body: {
+          type: "BlockStatement",
+          body: then,
+        },
+      });
     }
     //console.log(token);
     return true;
@@ -465,23 +564,44 @@ export class DNCL3 {
   runBlock(ast) {
     const body = ast.type == "BlockStatement" || ast.type == "Program" ? ast.body : [ast];
     for (const cmd of body) {
+      console.log(cmd)
       if (cmd.type == "ExpressionStatement") {
-        if (cmd.expression.type == "AssignmentExpression") {
-          const name = cmd.expression.left.name;
-          if (this.vars[name] !== undefined && isConstantName(name)) {
-            throw new Error("定数には再代入できません");
-          }
-          this.vars[name] = this.calcExpression(cmd.expression.right);
-        } else if (cmd.expression.type == "CallExpression") {
-          if (cmd.expression.callee.name != "print") throw new Error("print以外の関数には非対応です");
-          this.output(cmd.expression.arguments.map(i => this.calcExpression(i)).join(" "));
+        this.runBlock(cmd.expression);
+      } else if (cmd.type == "AssignmentExpression") {
+        const name = cmd.left.name;
+        if (this.vars[name] !== undefined && isConstantName(name)) {
+          throw new Error("定数には再代入できません");
         }
+        this.vars[name] = this.calcExpression(cmd.right);
+      } else if (cmd.type == "CallExpression") {
+        if (cmd.callee.name != "print") throw new Error("print以外の関数には非対応です");
+        this.output(cmd.arguments.map(i => this.calcExpression(i)).join(" "));
       } else if (cmd.type == "IfStatement") {
         const cond = this.calcExpression(cmd.test);
         if (cond) {
           this.runBlock(cmd.consequent);
         } else if (cmd.alternate) {
           this.runBlock(cmd.alternate);
+        }
+      } else if (cmd.type == "WhileStatement") {
+        for (let i = 0;; i++) {
+          const cond = this.calcExpression(cmd.test);
+          if (!cond) break;
+          this.runBlock(cmd.body);
+          if (i >= MAX_LOOP) {
+            throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+          }
+        }
+      } else if (cmd.type == "ForStatement") {
+        this.runBlock(cmd.init);
+        for (let i = 0;; i++) {
+          const cond = this.calcExpression(cmd.test);
+          if (!cond) break;
+          this.runBlock(cmd.body);
+          this.runBlock(cmd.update);
+          if (i >= MAX_LOOP) {
+            throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+          }
         }
       }
     }
@@ -493,6 +613,7 @@ export class DNCL3 {
     if (ast.type == "Literal") {
       return ast.value;
     } else if (ast.type == "Identifier") {
+      console.log("vars", this.vars)
       if (this.vars[ast.name] === undefined) {
         throw new Error("初期化されていない変数 " + ast.name + " が使われました");
       }
