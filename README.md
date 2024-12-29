@@ -10,7 +10,7 @@ deno run -A DNCL3.example.js bmi
 - ブラウザで動作するテスト環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
 
 ※ TODO: 下記は未実装です
-- 配列 / input / do / until / function / return
+- 配列 / input / do / until
 
 ## 1 変数と値
 

@@ -1,7 +1,10 @@
 import { parseModule } from "https://code4fukui.github.io/acorn-es/parseModule.js";
 
 const reserved = [
-  "print", "input", "if", "then", "else", "while", "do", "until", "for", "to", "step", "function", "return",
+  "print", "input",
+  "if", "then", "else",
+  "while", "do", "until", "for", "to", "step",
+  "function", "return",
   "and", "or", "not",
 ];
 
@@ -17,6 +20,15 @@ const isConstantName = (s) => {
 };
 
 const MAX_LOOP = 1000;
+
+class Return {
+  constructor(val) {
+    this.val = val;
+  }
+  getValue() {
+    return this.val;
+  }
+}
 
 export class DNCL3 {
   constructor(s, callbackoutput) {
@@ -74,7 +86,7 @@ export class DNCL3 {
           state = STATE_WORD;
         }
       } else if (state == STATE_WORD) {
-        if (c == " " || c == "\t" || c == "\n" || isOperator(c) || c == ")" || c == "[" || c == "]" || c === undefined) {
+        if (c == " " || c == "\t" || c == "\n" || isOperator(c) || c == "(" || c == ")" || c == "[" || c == "]" || c === undefined) {
           this.p--;
           const w = res.join("");
           if (reserved.indexOf(w) >= 0) {
@@ -206,7 +218,32 @@ export class DNCL3 {
         value: t1.value,
       };
     } else if (t1.type == "var") {
-      return this.getVar(t1.name);
+      const chk = this.getToken();
+      if (chk.type != "(") {
+        this.backToken(chk);
+        return this.getVar(t1.name);
+      }
+      // function call
+      const args = [];
+      const chk1 = this.getToken();
+      if (chk1.type != ")") {
+        this.backToken(chk1);
+        for (;;) {
+          args.push(this.getExpression());
+          const chk2 = this.getToken();
+          if (chk2.type == ")") break;
+          if (chk2.type != "operator" && chk2.operator != ",") throw new Error("関数呼び出しのパラメータは , 区切りが必要です");
+        }
+      }
+      return {
+        type: "CallExpression",
+        callee: {
+          type: "Identifier",
+          name: t1.name,
+        },
+        arguments: args,
+      };
+
       /*
     } else if (t1.operator == "-") {
       const t2 = this.getToken();
@@ -582,19 +619,54 @@ export class DNCL3 {
           body: then,
         },
       });
+    } else if (token.type == "function") {
+      const varname = this.getToken();
+      if (varname.type != "var") throw new Error("function文の後は関数名が必要です");
+      const blacket = this.getToken();
+      if (blacket.type != "(") throw new Error("関数名の後は ( が必要です");
+      const params = [];
+      const chk = this.getToken();
+      if (chk.type != ")") {
+        this.backToken(chk);
+        for (;;) {
+          const chk = this.getToken();
+          if (chk.type != "var") throw new Error("引数名がありません");
+          params.push(chk.name);
+          const cma = this.getToken();
+          if (cma.type == ")") break;
+          if (cma.type != "operator" && cma.operator != ",") throw new Error("引数の区切り , が必要です");
+        }
+      }
+      const b2 = this.getToken();
+      if (b2.type != "{") throw new Error("関数の中身記述に { が必要です");
+      const body2 = [];
+      for (;;) {
+        if (!this.parseCommand(body2)) {
+          const endblacket = this.getToken();
+          if (endblacket.type != "}") throw new Error(`関数が"}"で閉じられていません`);
+          break;
+        }
+      }
+      body.push({
+        type: "FunctionDeclaration",
+        id: {
+          type: "Identifier",
+          name: varname.name,
+        },
+        params: params.map(i => ({ type: "Identifier", name: i })),
+        body: {
+          type: "BlockStatement",
+          body: body2,
+        }
+      });
+    } else if (token.type == "return") {
+      body.push({
+        type: "ReturnStatement",
+        argument: this.getExpression(),
+      });
     }
     //console.log(token);
     return true;
-  }
-  skipCommandLine() {
-    for (;;) {
-      const t = this.getToken();
-      if (t.type == "else") return;
-      if (t.type == "eol" || t.type == "eof") {
-        this.backToken(t);
-        return;
-      }
-    }
   }
   parse() {
     const body = [];
@@ -660,6 +732,15 @@ export class DNCL3 {
             throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
           }
         }
+      } else if (cmd.type == "FunctionDeclaration") {
+        const name = cmd.id.name;
+        if (this.vars[name] !== undefined) {
+          throw new Error("すでに宣言済みに名前では関数を定義できません");
+        }
+        this.vars[name] = cmd;
+      } else if (cmd.type == "ReturnStatement") {
+        const val = this.calcExpression(cmd.argument);
+        throw new Return(val);
       } else {
         throw new Error("対応していない expression type が使われました。 " + cmd.type);
       }
@@ -667,7 +748,7 @@ export class DNCL3 {
   }
   run() {
     this.runBlock(this.ast);
-    console.log(this.vars);
+    //console.log(this.vars);
   }
   getVarName(ast) {
     for (;;) {
@@ -687,7 +768,6 @@ export class DNCL3 {
     } else if (ast.type == "MemberExpression") {
       const name = this.getVarName(ast);
       if (this.vars[name] === undefined) {
-        console.log(this.vars);
         throw new Error("初期化されていない配列 " + name + " が使われました");
       }
       const idx = this.getArrayIndex(ast.property);
@@ -732,6 +812,28 @@ export class DNCL3 {
         return n || m;
       } else {
         throw new Error("対応していない演算子が使われました");
+      }
+    } else if (ast.type == "CallExpression") {
+      const name = ast.callee.name;
+      if (this.vars[name] === undefined) {
+        throw new Error("定義されていない関数 " + name + " が使われました");
+      }
+      const func = this.vars[name];
+      if (ast.arguments.length != func.params.length) {
+        throw new Error("引数の数が合っていません");
+      }
+      for (let i = 0; i < ast.arguments.length; i++) {
+        const localvarname = func.params[i].name;
+        this.vars[localvarname] = this.calcExpression(ast.arguments[i]);
+      }
+      try {
+        this.runBlock(func.body);
+        throw new Error("関数が値を返しませんでした");
+      } catch (e) {
+        if (e instanceof Return) {
+          return e.getValue();
+        }
+        throw e;
       }
     } else {
       throw new Error("対応していない expression type が使われました。 " + ast.type);
