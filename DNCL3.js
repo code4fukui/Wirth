@@ -20,7 +20,7 @@ const MAX_LOOP = 1000;
 
 export class DNCL3 {
   constructor(s, callbackoutput) {
-    this.s = s;
+    this.s = s.replaceAll("\r", "");
     this.p = 0;
     this.vars = {};
     this.callbackoutput = callbackoutput;
