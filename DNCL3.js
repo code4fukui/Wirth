@@ -217,6 +217,12 @@ export class DNCL3 {
         type: "Literal",
         value: t1.value,
       };
+    } else if (t1.type == "operator" && t1.operator == "-") {
+      return {
+        type: "UnaryExpression",
+        operator: "-",
+        argument: this.getValue(),
+      };
     } else if (t1.type == "var") {
       const chk = this.getToken();
       if (chk.type != "(") {
@@ -427,48 +433,54 @@ export class DNCL3 {
         },
       });
     } else if (token.type == "var") {
-      let token2 = token;
-      const res = [];
-      for (;;) {
-        const left = this.getVar(token2.name);
-        const op = this.getToken();
-        if (op.type != "operator" || op.operator != "=") throw new Error("代入は変数の後に = で続ける必要があります");
-        const right = this.getExpression();
-        res.push({
-          type: "AssignmentExpression",
-          operator: "=",
-          left,
-          right,
-        });
-        //if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
-        //this.vars[token2.name] = val;
+      const chk = this.getToken();
+      if (chk.type == "(") { // function
 
-        const op2 = this.getToken();
-        if (op2.type == "eol" || op2.type == "eof") {
-          this.backToken(op2);
-          break;
-        }
-        if (op2.operator != ",") {
-          //throw new Error("代入はコンマ区切りのみ対応しています");
-          this.backToken(op2);
-          break;
-        }
-        token2 = this.getToken();
-        if (token2.type != "var") throw new Error("コンマ区切りで続けられるのは代入文のみです");
-      }
-      if (res.length == 1) {
-        body.push({
-          type: "ExpressionStatement",
-          expression: res[0],
-        });
-      } else {
-        body.push({
-          type: "ExpressionStatement",
-          expression: {
-            type: "SequenceExpression",
-            expressions: res,
+      } else { // var
+        this.backToken(chk);
+        let token2 = token;
+        const res = [];
+        for (;;) {
+          const left = this.getVar(token2.name);
+          const op = this.getToken();
+          if (op.type != "operator" || op.operator != "=") throw new Error("代入は変数の後に = で続ける必要があります");
+          const right = this.getExpression();
+          res.push({
+            type: "AssignmentExpression",
+            operator: "=",
+            left,
+            right,
+          });
+          //if (isConstantName(token2.name) && this.vars[token2.name] !== undefined) throw new Error("定数には再代入できません");
+          //this.vars[token2.name] = val;
+
+          const op2 = this.getToken();
+          if (op2.type == "eol" || op2.type == "eof") {
+            this.backToken(op2);
+            break;
           }
-        });
+          if (op2.operator != ",") {
+            //throw new Error("代入はコンマ区切りのみ対応しています");
+            this.backToken(op2);
+            break;
+          }
+          token2 = this.getToken();
+          if (token2.type != "var") throw new Error("コンマ区切りで続けられるのは代入文のみです");
+        }
+        if (res.length == 1) {
+          body.push({
+            type: "ExpressionStatement",
+            expression: res[0],
+          });
+        } else {
+          body.push({
+            type: "ExpressionStatement",
+            expression: {
+              type: "SequenceExpression",
+              expressions: res,
+            }
+          });
+        }
       }
     } else if (token.type == "if") {
       const cond = this.getCondition();
@@ -774,7 +786,13 @@ export class DNCL3 {
       return this.vars[name][idx];
     } else if (ast.type == "UnaryExpression") {
       const n = this.calcExpression(ast.argument);
-      return !n;
+      if (ast.operator == "not") {
+        return !n;
+      } else if (ast.operator == "-") {
+        return -n;
+      } else {
+        throw new Error("対応していない演算子 " + ast.operator + " です");
+      }
     } else if (ast.type == "BinaryExpression" || ast.type == "LogicalExpression") {
       const n = this.calcExpression(ast.left);
       const m = this.calcExpression(ast.right);
