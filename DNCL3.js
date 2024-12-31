@@ -3,7 +3,7 @@ import { parseModule } from "https://code4fukui.github.io/acorn-es/parseModule.j
 const reserved = [
   "print", "input",
   "if", "then", "else",
-  "while", "do", "until", "for", "to", "step",
+  "while", "do", "until", "for", "to", "step", "break",
   "function", "return",
   "and", "or", "not",
 ];
@@ -28,6 +28,9 @@ class Return {
   getValue() {
     return this.val;
   }
+}
+
+class Break {
 }
 
 export class DNCL3 {
@@ -211,6 +214,22 @@ export class DNCL3 {
       const t2 = this.getToken();
       if (t2.type != ")") throw new Error("カッコが閉じられていません");
       return res;
+    }
+    if (t1.type == "[") {
+      const elements = [];
+      for (;;) {
+        const t2 = this.getToken();
+        if (t2.type == "]") break;
+        this.backToken(t2);
+        elements.push(this.getExpression());
+        const t3 = this.getToken();
+        if (t3.type == "]") break;
+        if (t3.type != "operator" && t3.operator != ",") throw new Error("配列の定義は , で区切る必要があります");
+      }
+      return {
+        type: "ArrayExpression",
+        elements,
+      };
     }
     if (t1.type == "num" || t1.type == "string") {
       return {
@@ -676,6 +695,12 @@ export class DNCL3 {
         type: "ReturnStatement",
         argument: this.getExpression(),
       });
+    } else if (token.type == "break") {
+      body.push({
+        type: "BreakStatement",
+      });
+    } else {
+      //throw new Error("対応していない type " + token.type + " です");
     }
     //console.log(token);
     return true;
@@ -696,6 +721,7 @@ export class DNCL3 {
   runBlock(ast) {
     const body = ast.type == "BlockStatement" || ast.type == "Program" ? ast.body : [ast];
     for (const cmd of body) {
+      //console.log(cmd)
       if (cmd.type == "ExpressionStatement") {
         this.runBlock(cmd.expression);
       } else if (cmd.type == "AssignmentExpression") {
@@ -725,23 +751,35 @@ export class DNCL3 {
           this.runBlock(cmd.alternate);
         }
       } else if (cmd.type == "WhileStatement") {
-        for (let i = 0;; i++) {
-          const cond = this.calcExpression(cmd.test);
-          if (!cond) break;
-          this.runBlock(cmd.body);
-          if (i >= MAX_LOOP) {
-            throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+        try {
+          for (let i = 0;; i++) {
+            const cond = this.calcExpression(cmd.test);
+            if (!cond) break;
+            this.runBlock(cmd.body);
+            if (i >= MAX_LOOP) {
+              throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+            }
+          }
+        } catch (e) {
+          if (!(e instanceof Break)) {
+            throw e;
           }
         }
       } else if (cmd.type == "ForStatement") {
         this.runBlock(cmd.init);
-        for (let i = 0;; i++) {
-          const cond = this.calcExpression(cmd.test);
-          if (!cond) break;
-          this.runBlock(cmd.body);
-          this.runBlock(cmd.update);
-          if (i >= MAX_LOOP) {
-            throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+        try {
+          for (let i = 0;; i++) {
+            const cond = this.calcExpression(cmd.test);
+            if (!cond) break;
+            this.runBlock(cmd.body);
+            this.runBlock(cmd.update);
+            if (i >= MAX_LOOP) {
+              throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+            }
+          }
+        } catch (e) {
+          if (!(e instanceof Break)) {
+            throw e;
           }
         }
       } else if (cmd.type == "FunctionDeclaration") {
@@ -753,6 +791,8 @@ export class DNCL3 {
       } else if (cmd.type == "ReturnStatement") {
         const val = this.calcExpression(cmd.argument);
         throw new Return(val);
+      } else if (cmd.type == "BreakStatement") {
+        throw new Break();
       } else {
         throw new Error("対応していない expression type が使われました。 " + cmd.type);
       }
@@ -774,6 +814,7 @@ export class DNCL3 {
       return ast.value;
     } else if (ast.type == "Identifier") {
       if (this.vars[ast.name] === undefined) {
+        //console.log("var", this.vars)
         throw new Error("初期化されていない変数 " + ast.name + " が使われました");
       }
       return this.vars[ast.name];
@@ -783,7 +824,13 @@ export class DNCL3 {
         throw new Error("初期化されていない配列 " + name + " が使われました");
       }
       const idx = this.getArrayIndex(ast.property);
-      return this.vars[name][idx];
+      const v = this.vars[name];
+      if (typeof v == "string") {
+        if (idx >= 0 && idx < v.length) return v[idx];
+        return "";
+      } else {
+        return v[idx];
+      }
     } else if (ast.type == "UnaryExpression") {
       const n = this.calcExpression(ast.argument);
       if (ast.operator == "not") {
@@ -793,6 +840,9 @@ export class DNCL3 {
       } else {
         throw new Error("対応していない演算子 " + ast.operator + " です");
       }
+    } else if (ast.type == "ArrayExpression") {
+      const ar = ast.elements.map(i => this.calcExpression(i));
+      return ar;
     } else if (ast.type == "BinaryExpression" || ast.type == "LogicalExpression") {
       const n = this.calcExpression(ast.left);
       const m = this.calcExpression(ast.right);
