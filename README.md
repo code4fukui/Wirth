@@ -14,7 +14,7 @@ deno run -A DNCL3.example.js bmi
 
 ## 1 変数と値
 
-変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, and, or, not, if, else, while, do, until, for, to, step, function, return）は変数名として使用できません。
+変数名は，英字で始まる英数字と『 _ 』の並びです。ただし、予約語（print, input, and, or, not, if, else, while, do, until, for, to, step, break, function, return）は変数名として使用できません。
 
 - 例: n, sum, Tokuten
 
@@ -130,7 +130,7 @@ deno run -A DNCL3.example.js bmi
 《一般形》
 ```
 if 〈条件〉 {
-   〈処理〉
+  〈処理〉
 }
 ```
 
