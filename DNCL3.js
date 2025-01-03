@@ -607,6 +607,45 @@ export class DNCL3 {
           body: then,
         }
       });
+    } else if (token.type == "do") {
+      const tthen = this.getToken();
+      if (tthen.type != "{") throw new Error(`do文の条件の後に"{"がありません`);
+      const then = [];
+      for (;;) {
+        if (!this.parseCommand(then)) {
+          const endblacket = this.getToken();
+          if (endblacket.type != "}") throw new Error(`do文が"}"で閉じられていません`);
+          break;
+        }
+      }
+      const whileoruntil = this.getToken();
+      if (whileoruntil.type == "while") {
+        const cond = this.getCondition();
+        body.push({
+          type: "DoWhileStatement",
+          body: {
+            type: "BlockStatement",
+            body: then,
+          },
+          test: cond,
+        });
+      } else if (whileoruntil.type == "until") {
+        const cond = this.getCondition();
+        body.push({
+          type: "DoWhileStatement",
+          body: {
+            type: "BlockStatement",
+            body: then,
+          },
+          test: {
+            type: "UnaryExpression",
+            operator: "not",
+            argument: cond,
+          },
+        });
+      } else {
+        throw new Error("do文の後は while または until が必要です");
+      }
     } else if (token.type == "for") {
       const varname = this.getToken();
       if (varname.type != "var") throw new Error("for文の後は変数名が必要です");
@@ -800,6 +839,21 @@ export class DNCL3 {
             const cond = this.calcExpression(cmd.test);
             if (!cond) break;
             this.runBlock(cmd.body);
+            if (i >= MAX_LOOP) {
+              throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
+            }
+          }
+        } catch (e) {
+          if (!(e instanceof Break)) {
+            throw e;
+          }
+        }
+      } else if (cmd.type == "DoWhileStatement") {
+        try {
+          for (let i = 0;; i++) {
+            this.runBlock(cmd.body);
+            const cond = this.calcExpression(cmd.test);
+            if (!cond) break;
             if (i >= MAX_LOOP) {
               throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
             }
