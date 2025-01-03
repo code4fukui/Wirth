@@ -10,7 +10,7 @@ deno run -A DNCL3.example.js bmi
 - ブラウザで動作するテスト環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
 
 ※ TODO: 下記は未実装です
-- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3) / [input](https://github.com/code4fukui/DNCL3/issues/7) / [変数のスコープ](https://github.com/code4fukui/DNCL3/issues/13)
+- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3) / [変数のスコープ](https://github.com/code4fukui/DNCL3/issues/13)
 
 ## 1 変数と値
 
@@ -67,8 +67,8 @@ print s[0],s[2] # A C と表示される
 
 外部から入力された値を代入するために，次のように記述することができます。
 
-- 例: input x
-- 例: input "0から100までの好きな数を入力してください", x
+- 例: x = input()
+- 例: x = input("0から100までの好きな数を入力してください")
 
 ## 4 演算
 

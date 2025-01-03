@@ -1,0 +1,4 @@
+x = input()
+print "input", x
+x = input("二乗します")
+print x * x

@@ -1,7 +1,8 @@
 import { parseModule } from "https://code4fukui.github.io/acorn-es/parseModule.js";
 
 const reserved = [
-  "print", "input",
+  "print",
+  //"input",
   "if", "then", "else",
   "while", "do", "until", "for", "to", "step", "break",
   "function", "return",
@@ -471,7 +472,7 @@ export class DNCL3 {
           arguments: res,
         },
       });
-    } else if (token.type == "var") {
+    } else if (token.type == "var" || token.type == "input") {
       const chk = this.getToken();
       if (chk.type == "(") { // function
         const params = [];
@@ -1001,6 +1002,17 @@ export class DNCL3 {
       }
     } else if (ast.type == "CallExpression") {
       const name = ast.callee.name;
+      if (name == "input") {
+        if (ast.arguments.length > 1) {
+          throw new Error("引数の数が合っていません");
+        }
+        const q = ast.arguments.length ? this.calcExpression(ast.arguments[0]) : "入力してください";
+        const s = prompt(q);
+        if (s == null) return "";
+        const f = parseFloat(s);
+        if (!isNaN(f) && f.toString() == s) return f;
+        return s;
+      }
       if (this.vars[name] === undefined) {
         throw new Error("定義されていない関数 " + name + " が使われました");
       }
