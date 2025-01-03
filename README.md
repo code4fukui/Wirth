@@ -321,31 +321,31 @@ function 〈関数名〉( 〈引数列〉 ) {
 ```
 function 和を表示する(n) {
   wa = 0
-  for i = 1 to n step 1 {
+  for i = 1 to n {
     wa = wa + i
   }
-  print(wa)
+  print wa
 }
 ```
 
-例: 値 m の n 乗の値を表示する関数「べき乗を表示する(m，n)」の定義例
+例: 値 m の n 乗の値を表示する関数「べき乗を表示する(m, n)」の定義例
 ```
-function べき乗を表示する(m，n) {
+function べき乗を表示する(m, n) {
   p = 1
-  for i = 1 to n step 1 {
+  for i = 1 to n {
     p = p * m
   }
-  print(p)
+  print p
 }
 ```
 
 「return」を使用して値を返す関数を定義することができます。値を指定せずに「return」を使用すると値を返さず関数内の処理を終えることができます。
 
-例: 値 m の n 乗の値を返す関数「べき乗(m，n)」の定義例
+例: 値 m の n 乗の値を返す関数「べき乗(m, n)」の定義例
 ```
-function べき乗(m，n) {
+function べき乗(m, n) {
   p = 1
-  for i = 1 to n step 1 {
+  for i = 1 to n {
     p = p * m
   }
   return p

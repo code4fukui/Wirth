@@ -454,7 +454,28 @@ export class DNCL3 {
     } else if (token.type == "var") {
       const chk = this.getToken();
       if (chk.type == "(") { // function
-
+        const params = [];
+        const chk = this.getToken();
+        if (chk.type != ")") {
+          this.backToken(chk);
+          for (;;) {
+            params.push(this.getExpression());
+            const cma = this.getToken();
+            if (cma.type == ")") break;
+            if (cma.type != "operator" && cma.operator != ",") throw new Error("引数の区切り , が必要です");
+          }
+        }
+        body.push({
+          type: "ExpressionStatement",
+          expression: {
+            type: "CallExpression",
+            callee: {
+              type: "Identifier",
+              name: token.name,
+            },
+            arguments: params,
+          },
+        });
       } else { // var
         this.backToken(chk);
         let token2 = token;
@@ -741,8 +762,31 @@ export class DNCL3 {
           throw new Error("非対応の type です " + cmd.left.type);
         }
       } else if (cmd.type == "CallExpression") {
-        if (cmd.callee.name != "print") throw new Error("print以外の関数には非対応です");
-        this.output(cmd.arguments.map(i => this.calcExpression(i)).join(" "));
+        const name = cmd.callee.name;
+        if (name == "print") {
+          this.output(cmd.arguments.map(i => this.calcExpression(i)).join(" "));
+        } else {
+          if (this.vars[name] === undefined) {
+            throw new Error("定義されていない関数 " + name + " が使われました");
+          }
+          const func = this.vars[name];
+          if (ast.arguments.length != func.params.length) {
+            throw new Error("引数の数が合っていません");
+          }
+          for (let i = 0; i < ast.arguments.length; i++) {
+            const localvarname = func.params[i].name;
+            this.vars[localvarname] = this.calcExpression(ast.arguments[i]);
+          }
+          try {
+            this.runBlock(func.body);
+            //throw new Error("関数が値を返しませんでした");
+          } catch (e) {
+            if (e instanceof Return) {
+              //return e.getValue();
+            }
+            throw e;
+          }
+        }
       } else if (cmd.type == "IfStatement") {
         const cond = this.calcExpression(cmd.test);
         if (cond) {
