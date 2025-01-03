@@ -10,7 +10,7 @@ deno run -A DNCL3.example.js bmi
 - ブラウザで動作するテスト環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
 
 ※ TODO: 下記は未実装です
-- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3) / [input](https://github.com/code4fukui/DNCL3/issues/7) / [変数のスコープ](https://github.com/code4fukui/DNCL3/issues/13) / [複数行コメント](https://github.com/code4fukui/DNCL3/issues/14)
+- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3) / [input](https://github.com/code4fukui/DNCL3/issues/7) / [変数のスコープ](https://github.com/code4fukui/DNCL3/issues/13)
 
 ## 1 変数と値
 
@@ -379,6 +379,15 @@ function べき乗(m, n) {
 atai = 乱数() # 0以上1未満のランダムな小数をataiに代入する
 ```
 - ※1行内において#以降の記述は処理の対象とならない
+
+```
+#=
+複数行に渡る
+コメントの記述方法
+=#
+```
+
+- #= から =# までの記述は処理の対象とならない
 
 ## reference
 

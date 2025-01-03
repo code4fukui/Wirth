@@ -58,8 +58,11 @@ export class DNCL3 {
     const STATE_WORD = 1;
     const STATE_STRING = 2;
     const STATE_COMMENT = 3;
-    const STATE_NUMBER = 4;
-    const STATE_OPERATOR = 5;
+    const STATE_COMMENT_SINGLE = 4;
+    const STATE_COMMENT_MULTI = 5;
+    const STATE_COMMENT_MULTI2 = 6;
+    const STATE_NUMBER = 7;
+    const STATE_OPERATOR = 8;
     let state = STATE_FIRST;
     const res = [];
     const pos = this.p;
@@ -110,10 +113,27 @@ export class DNCL3 {
           res.push(c);
         }
       } else if (state == STATE_COMMENT) {
+        if (c == "=") {
+          state = STATE_COMMENT_MULTI;
+        } else {
+          this.p--;
+          state = STATE_COMMENT_SINGLE;
+        }
+      } else if (state == STATE_COMMENT_SINGLE) {
         if (c == "\n") {
           return { pos, type: "eol" };
         } else if (c === undefined) {
           return { pos, type: "eof" };
+        }
+      } else if (state == STATE_COMMENT_MULTI) {
+        if (c == "=") {
+          state = STATE_COMMENT_MULTI2;
+        }
+      } else if (state == STATE_COMMENT_MULTI2) {
+        if (c == "#") {
+          return { pos, type: "eol" };
+        } else {
+          state = STATE_COMMENT_MULTI;
         }
       } else if (state == STATE_NUMBER) {
         if (isNumber(c) || c == ".") {

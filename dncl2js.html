@@ -113,9 +113,11 @@ setInterval(() => {
 //const fn = "geo3x3";
 //const fn = "varja";
 //const fn = "funcja";
-const fn = "dowhile";
+//const fn = "dowhile";
+const fn = "comment";
 
-const firstprog = await (await fetch("examples/" + fn + ".dncl")).text();
+const fn0 = location.hash.substring(1) || fn;
+const firstprog = await (await fetch("examples/" + fn0 + ".dncl")).text();
 
 prog.setValue(firstprog);
 onchange();
