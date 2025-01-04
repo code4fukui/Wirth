@@ -16,7 +16,7 @@ deno run -A DNCL3.example.js bmi
 
 変数名は、英字で始まる英数字と「_」や日本語の並びです。ただし、予約語（print, input, and, or, not, if, else, while, do, until, for, to, step, break, function, return）は変数名として使用できません。
 
-- 例: n, sum, points
+- 例: n, sum, points, 得点
 
 すべて大文字の英字による変数は実行中に変化しない値を表します。
 
