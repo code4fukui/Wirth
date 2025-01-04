@@ -1,6 +1,0 @@
-if "abc" == "abc" { print "TRUE" } else { print "FALSE" }
-if "abc" != "abc" { print "TRUE" } else { print "FALSE" }
-if 0 == 0 { print "TRUE" } else { print "FALSE" }
-if 0 == 1 { print "TRUE" } else { print "FALSE" }
-if 0 < 1 { print "TRUE" } else { print "FALSE" }
-if 0 > 1 { print "TRUE" } else { print "FALSE" }

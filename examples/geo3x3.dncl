@@ -1,3 +1,4 @@
+# 19. Geo3x3のエンコード、デコード
 function encode(lat, lng, level) {
   res = "E"
   if lng < 0 {

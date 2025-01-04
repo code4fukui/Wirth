@@ -1,3 +1,4 @@
+# 17. 日本語の関数の定義と呼び出し function
 function べき乗を表示する(m, n) {
   p = 1
   for i = 1 to n {

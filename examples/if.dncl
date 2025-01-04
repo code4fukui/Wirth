@@ -1,3 +1,4 @@
+# 5. 条件文 if
 if "abc" == "abc" {
   print "TRUE"
 } else {

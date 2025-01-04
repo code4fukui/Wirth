@@ -1,3 +1,4 @@
+# 11. 順次繰り返し for
 for i = 0 to 15 {
   print i, i // 3, i / 3
 }

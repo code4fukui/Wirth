@@ -1,3 +1,4 @@
+# 9. BMI計算
 height = 176
 weight = 64
 height_m = height / 100

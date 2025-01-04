@@ -1,3 +1,4 @@
+# 12. 前判定繰り返し while
 i = 0
 while i < 10 {
   print i
