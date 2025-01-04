@@ -800,7 +800,9 @@ export class DNCL3 {
     return prop;
   }
   runBlock(ast) {
-    const body = ast.type == "BlockStatement" || ast.type == "Program" ? ast.body : [ast];
+    const body = ast.type == "BlockStatement" || 
+      ast.type == "Program" ? ast.body :
+      ast.type == "SequenceExpression" ? ast.expressions : [ast];
     for (const cmd of body) {
       //console.log(cmd)
       if (cmd.type == "ExpressionStatement") {
