@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>DNCL3実行環境</title>
+</head><body>
+<h1>DNCL3実行環境</h1>
+
+サンプル <select id=selexamples></select> <label><input type=checkbox id=chkvar>実行後に変数表示</label>
+<main>
+<div class=diveditor id=divprog></div>
+<div class=diveditor id=divrun></div>
+</main>
+
+<a href=https://github.com/code4fukui/DNCL3/blob/main/README.md>DNCL3言語仕様</a> <a href=https://github.com/code4fukui/DNCL3/>src on GitHub</a>
+
+<style>
+h1 {
+  margin: 0;
+}
+.diveditor {
+  width: calc(50% - .5em);
+  padding: .1em;
+  display: inline-block;
+  height: calc(100vh - 8em);
+}
+a {
+  color: gray !important;
+}
+</style>
+
+<script type="module">
+import { DNCL3 } from "./DNCL3.js";
+import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
+import { CSV } from "https://js.sabae.cc/CSV.js";
+
+export const makeEditor = (div, language) => {
+  const editor = monaco.editor.create(div, {
+    language,
+    autoIndent: true,
+    //autoIndent: "none",
+    //formatOnPaste: true,
+    //formatOnType: true,
+
+    suggestOnTriggerCharacters: false,  // トリガーキャラクターでの補完を無効化
+    acceptSuggestionOnEnter: 'off',     // Enterでの補完選択を無効化
+    parameterHints: false,              // パラメータヒントを無効化
+    quickSuggestions: false,            // 自動的に補完候補を表示しない
+    inlineSuggest: { enabled: false },  // インライン補完を無効化
+    
+    tabSize: 2,
+    minimap: { enabled: false },
+    //overflow: "auto",
+    automaticLayout: true,
+    theme: "vs-dark",
+  });
+  window.addEventListener("resize", () => {
+    editor.layout();
+  });
+  return editor;
+};
+
+const prog = makeEditor(divprog, "");
+const run = makeEditor(divrun, "");
+
+const removeStartEnd = (json) => {
+  for (const name in json) {
+    const v = json[name];
+    if (typeof v == "object") {
+      removeStartEnd(v);
+    } else if (name == "start" || name == "end") {
+      delete json[name];
+    }
+  }
+};
+
+let bkval = null;
+const onchange = () => {
+  const src = prog.getValue();
+  run.setValue("");
+  run.revealLine(1);
+  try {
+    const dncl = new DNCL3(src, (s) => {
+      run.setValue(run.getValue() + s + "\n");
+    });
+    dncl.run();
+    if (chkvar.checked) {
+      console.log(dncl.vars)
+      run.setValue(run.getValue() + "\nvars " + JSON.stringify(dncl.vars, null, 2) + "\n");
+    }
+  } catch (e) {
+    console.log(e);
+    //ast.setValue(JSON.stringify(e, null, 2));
+    run.setValue(run.getValue() + e.toString() + "\n");
+  }
+  bkval = src;
+};
+
+//prog.onDidChangeModelContent = onchange; // なぜか初回のみ
+setInterval(() => {
+  const txt = prog.getValue();
+  if (bkval == txt) return;
+  onchange();
+}, 500);
+
+const data = await CSV.fetchJSON("examples.csv");
+for (const item of data) {
+  const opt = document.createElement("option");
+  opt.textContent = item.title;
+  opt.value = item.fn;
+  selexamples.appendChild(opt);
+}
+selexamples.oninput = async () => {
+  const fn = selexamples.value;
+  const s = await (await fetch("examples/" + fn)).text();
+  prog.setValue(s);
+  onchange();
+};
+
+const fn = "print.dncl";
+const fn0 = location.hash.substring(1) || fn;
+selexamples.value = fn0;
+selexamples.oninput();
+
+chkvar.oninput = () => onchange();
+</script>
+
+</body></html>
