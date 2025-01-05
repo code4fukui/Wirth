@@ -23,7 +23,7 @@ deno -A https://code4fukui.github.io/DNCL3/cli.js examples/bmi.dncl
 - DNCL3実装デバッグ環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
 
 ※ TODO: 下記は未実装です
-- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3) / [変数のスコープ](https://github.com/code4fukui/DNCL3/issues/13)
+- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3)
 
 ## 1 変数と値
 
