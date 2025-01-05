@@ -729,7 +729,10 @@ export class DNCL3 {
         this.backToken(chkstep);
       } else {
         step = this.getExpression();
-        if (step.type != "Literal") throw new Error("stepには数値のみ指定可能です");
+        if (!(
+          step.type == "Literal" ||
+          step.type == "UnaryExpression" && step.operator == "-" && step.argument.type == "Literal"
+        )) throw new Error("stepには数値のみ指定可能です");
       }
       const tthen = this.getToken();
       if (tthen.type != "{") throw new Error(`for文の後に"{"がありません`);
@@ -745,6 +748,7 @@ export class DNCL3 {
         type: "Identifier",
         name: varname.name,
       };
+      const stepval = step.type == "Literal" ? step.value : -step.argument.value;
       body.push({
         type: "ForStatement",
         init: {
@@ -756,7 +760,7 @@ export class DNCL3 {
         test: {
           type: "BinaryExpression",
           left: astvar,
-          operator: step.value > 0 ? "<=" : ">=",
+          operator: stepval > 0 ? "<=" : ">=",
           right: endval,
         },
         update: {
@@ -766,7 +770,7 @@ export class DNCL3 {
           right: {
             type: "BinaryExpression",
             left: astvar,
-            operator: step.value > 0 ? "+" : "-",
+            operator: "+",
             right: step,
           },
         },

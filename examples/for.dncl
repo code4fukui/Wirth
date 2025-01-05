@@ -2,3 +2,6 @@
 for i = 0 to 15 {
   print i, i // 3, i / 3
 }
+for i = 5 to 0 step -0.5 {
+  print i
+}
