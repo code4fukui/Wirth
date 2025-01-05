@@ -1,12 +1,12 @@
 # 手順記述言語 (DNCL3) の仕様
 
-高等学校におけるアルゴリズムやプログラムに関する教育では、採用されるプログラミング言語は多様で、プログラミングの実習時間も異なります。このような事情を考慮し、[DNCL](https://github.com/code4fukui/DNCL)、[DNCL2](https://github.com/code4fukui/DNCL2)を踏まえた、手順記述言語「DNCL3」を定義します。
+高等学校におけるアルゴリズムやプログラムに関する教育では、採用されるプログラミング言語は多様で、プログラミングの実習時間も異なります。このような事情を考慮し、[DNCL](https://github.com/code4fukui/DNCL)、[DNCL2](https://github.com/code4fukui/DNCL2)を踏まえた、手順記述言語「DNCL3」を定義します。（ソースファイルの拡張子は .dncl、MIMEタイプは text/dncl とします。）
 
 - ブラウザで動作する実行環境 [DNCL3実行環境](https://code4fukui.github.io/DNCL3/)
 - HTML内で組み込んで動かす例 [DNCL on web](https://code4fukui.github.io/DNCL3/dnclweb.html)
 ```html
 <script type="module" src="https://code4fukui.github.io/DNCL3/web.js"></script>
-<script type="dncl">
+<script type="text/dncl">
 sum = 0
 for i = 1 to 10 {
   sum = sum + i
