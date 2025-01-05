@@ -129,10 +129,14 @@ export class DNCL3 {
       } else if (state == STATE_COMMENT_MULTI) {
         if (c == "=") {
           state = STATE_COMMENT_MULTI2;
+        } else if (c === undefined) {
+          return { pos, type: "eof" };
         }
       } else if (state == STATE_COMMENT_MULTI2) {
         if (c == "#") {
           return { pos, type: "eol" };
+        } else if (c === undefined) {
+         return { pos, type: "eof" };
         } else {
           state = STATE_COMMENT_MULTI;
         }
