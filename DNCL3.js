@@ -37,9 +37,9 @@ class Break {
 export class DNCL3 {
   constructor(s, callbackoutput) {
     this.s = s.replaceAll("\r", "");
-    this.p = 0;
     this.vars = {};
     this.callbackoutput = callbackoutput;
+    //this.parseTokens();
     this.parse();
   }
   output(s) {
@@ -448,17 +448,23 @@ export class DNCL3 {
     }
     if (token.type == "print") {
       const res = [];
-      for (;;) {
-        res.push(this.getExpression());
-        const op = this.getToken();
-        if (op.type == "eol" || op.type == "eof" || op.type == "else") {
-          this.backToken(op);
-          break;
-        }
-        if (op.operator != ",") {
-          this.backToken(op);
-          break;
-          //throw new Error("表示はコンマ区切りのみ対応しています");
+      const chk = this.getToken(true);
+      if (chk.type == "eol" || chk.type == "eof") {
+        this.backToken(chk);
+      } else {
+        this.backToken(chk);
+        for (;;) {
+          res.push(this.getExpression());
+          const op = this.getToken();
+          if (op.type == "eol" || op.type == "eof") {
+            this.backToken(op);
+            break;
+          }
+          if (op.operator != ",") {
+            this.backToken(op);
+            break;
+            //throw new Error("表示はコンマ区切りのみ対応しています");
+          }
         }
       }
       body.push({
@@ -787,10 +793,19 @@ export class DNCL3 {
     return true;
   }
   parse() {
+    this.p = 0;
     const body = [];
     while (this.parseCommand(body));
     const ast = { "type": "Program", body };
     this.ast = ast;
+  }
+  parseTokens() {
+    this.p = 0;
+    for (;;) {
+      const c = this.getToken(true);
+      console.log(c);
+      if (c.type == "eof") break;
+    }
   }
   getArrayIndex(ast) {
     const prop = this.calcExpression(ast);

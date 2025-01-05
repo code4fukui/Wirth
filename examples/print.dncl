@@ -1,5 +1,6 @@
 # 1. 値の表示 print
 print 15 #コメント
+print
 print "a" + (3 + 5) + "b"
 print 10 // 3 + "kg"
 print 1, "abc", 30
