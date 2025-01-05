@@ -3,7 +3,6 @@
 高等学校におけるアルゴリズムやプログラムに関する教育では、採用されるプログラミング言語は多様で、プログラミングの実習時間も異なります。このような事情を考慮し、[DNCL](https://github.com/code4fukui/DNCL)、[DNCL2](https://github.com/code4fukui/DNCL2)を踏まえた、手順記述言語「DNCL3」を定義します。
 
 - ブラウザで動作する実行環境 [DNCL3実行環境](https://code4fukui.github.io/DNCL3/)
-- テスト環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
 - HTML内で組み込んで動かす例 [DNCL on web](https://code4fukui.github.io/DNCL3/dnclweb.html)
 ```html
 <script type="module" src="https://code4fukui.github.io/DNCL3/web.js"></script>
@@ -16,11 +15,12 @@ print i
 </script>
 ```
 
-
 - CLI(Command Line Interface)での実行例: BMI計算 [examples/bmi.dncl](examples/bmi.dncl)
 ```sh
 deno -A https://code4fukui.github.io/DNCL3/cli.js examples/bmi.dncl
 ```
+
+- DNCL3実装デバッグ環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
 
 ※ TODO: 下記は未実装です
 - [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3) / [変数のスコープ](https://github.com/code4fukui/DNCL3/issues/13)
