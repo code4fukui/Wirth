@@ -1058,7 +1058,6 @@ export class DNCL3 {
     const res = {};
     for (const name in this.vars) {
       const o = this.vars[name];
-      console.log(name, typeof o, o.type)
       if (typeof o == "object" && o.type == "FunctionDeclaration") {
         res[name] = "[function]";
       } else {
