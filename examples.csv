@@ -18,3 +18,4 @@ func.dncl,16. 関数の定義と呼び出し function
 funcja.dncl,17. 日本語の関数の定義と呼び出し function
 printbin.dncl,18. 二進法で表示
 geo3x3.dncl,19. Geo3x3のエンコード、デコード
+scope.dncl,20. 変数のスコープ

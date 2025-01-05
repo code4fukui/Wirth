@@ -1,0 +1,13 @@
+# 20. 変数のスコープ
+a = 3
+b = 100
+function func1(a, b) {
+  a = a + 1
+  function func2(a) {
+    a = a * 2
+    return a
+  }
+  print a + b + func2(1000)
+}
+func1(10, 3)
+print a, b

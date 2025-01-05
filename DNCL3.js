@@ -34,6 +34,40 @@ class Return {
 class Break {
 }
 
+class Scope {
+  constructor(parent = null) {
+    this.vars = {};
+    this.parent = parent;
+  }
+  isDefined(name) {
+    for (let scope = this; scope; scope = scope.parent) {
+      if (scope.vars[name] !== undefined) {
+        return true;
+      }
+    }
+    return false;
+  }
+  getVar(name) {
+    for (let scope = this; scope; scope = scope.parent) {
+      if (scope.vars[name] !== undefined) {
+        return scope.vars[name];
+      }
+    }
+    throw new Error("定義されていない変数 " + name + " が使われました");
+  }
+  setVar(name, o, forcelocal = false) {
+    if (!forcelocal) {
+      for (let scope = this; scope; scope = scope.parent) {
+        if (scope.vars[name] !== undefined) {
+          scope.vars[name] = o;
+          return;
+        }
+      }
+    }
+    this.vars[name] = o;
+  }
+}
+
 export class DNCL3 {
   constructor(s, callbackoutput) {
     this.s = s.replaceAll("\r", "");
@@ -811,55 +845,56 @@ export class DNCL3 {
       if (c.type == "eof") break;
     }
   }
-  getArrayIndex(ast) {
-    const prop = this.calcExpression(ast);
+  getArrayIndex(ast, scope) {
+    const prop = this.calcExpression(ast, scope);
     if (prop < 0 || typeof prop == "string" && parseInt(prop).toString() != prop) {
       throw new Error("配列には0または正の整数のみ指定可能です");
     }
     return prop;
   }
-  runBlock(ast) {
+  runBlock(ast, scope) {
     const body = ast.type == "BlockStatement" || 
       ast.type == "Program" ? ast.body :
       ast.type == "SequenceExpression" ? ast.expressions : [ast];
     for (const cmd of body) {
       //console.log(cmd)
       if (cmd.type == "ExpressionStatement") {
-        this.runBlock(cmd.expression);
+        this.runBlock(cmd.expression, scope);
       } else if (cmd.type == "AssignmentExpression") {
         const name = this.getVarName(cmd.left);
-        if (this.vars[name] !== undefined && isConstantName(name)) {
+        if (scope.isDefined(name) && isConstantName(name)) {
           throw new Error("定数には再代入できません");
         }
         if (cmd.left.type == "Identifier") {
-          this.vars[name] = this.calcExpression(cmd.right);
+          scope.setVar(name, this.calcExpression(cmd.right, scope));
         } else if (cmd.left.type == "MemberExpression") {
-          if (this.vars[name] === undefined) {
-            this.vars[name] = [];
+          if (!scope.isDefined(name)) {
+            scope.setVar(name, []);
           }
-          const idx = this.getArrayIndex(cmd.left.property);
-          this.vars[name][idx] = this.calcExpression(cmd.right);
+          const idx = this.getArrayIndex(cmd.left.property, scope);
+          scope.getVar(name)[idx] = this.calcExpression(cmd.right, scope);
         } else {
           throw new Error("非対応の type です " + cmd.left.type);
         }
       } else if (cmd.type == "CallExpression") {
         const name = cmd.callee.name;
         if (name == "print") {
-          this.output(cmd.arguments.map(i => this.calcExpression(i)).join(" "));
+          this.output(cmd.arguments.map(i => this.calcExpression(i, scope)).join(" "));
         } else {
-          if (this.vars[name] === undefined) {
+          if (!scope.isDefined(name)) {
             throw new Error("定義されていない関数 " + name + " が使われました");
           }
-          const func = this.vars[name];
+          const func = scope.getVar(name);
           if (ast.arguments.length != func.params.length) {
             throw new Error("引数の数が合っていません");
           }
+          const scope2 = new Scope(scope);
           for (let i = 0; i < ast.arguments.length; i++) {
             const localvarname = func.params[i].name;
-            this.vars[localvarname] = this.calcExpression(ast.arguments[i]);
+            scope2.setVar(localvarname, this.calcExpression(ast.arguments[i], scope), true);
           }
           try {
-            this.runBlock(func.body);
+            this.runBlock(func.body, scope2);
             //throw new Error("関数が値を返しませんでした");
           } catch (e) {
             if (e instanceof Return) {
@@ -869,18 +904,18 @@ export class DNCL3 {
           }
         }
       } else if (cmd.type == "IfStatement") {
-        const cond = this.calcExpression(cmd.test);
+        const cond = this.calcExpression(cmd.test, scope);
         if (cond) {
-          this.runBlock(cmd.consequent);
+          this.runBlock(cmd.consequent, scope);
         } else if (cmd.alternate) {
-          this.runBlock(cmd.alternate);
+          this.runBlock(cmd.alternate, scope);
         }
       } else if (cmd.type == "WhileStatement") {
         try {
           for (let i = 0;; i++) {
-            const cond = this.calcExpression(cmd.test);
+            const cond = this.calcExpression(cmd.test, scope);
             if (!cond) break;
-            this.runBlock(cmd.body);
+            this.runBlock(cmd.body, scope);
             if (i >= MAX_LOOP) {
               throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
             }
@@ -893,8 +928,8 @@ export class DNCL3 {
       } else if (cmd.type == "DoWhileStatement") {
         try {
           for (let i = 0;; i++) {
-            this.runBlock(cmd.body);
-            const cond = this.calcExpression(cmd.test);
+            this.runBlock(cmd.body, scope);
+            const cond = this.calcExpression(cmd.test, scope);
             if (!cond) break;
             if (i >= MAX_LOOP) {
               throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
@@ -906,13 +941,13 @@ export class DNCL3 {
           }
         }
       } else if (cmd.type == "ForStatement") {
-        this.runBlock(cmd.init);
+        this.runBlock(cmd.init, scope);
         try {
           for (let i = 0;; i++) {
-            const cond = this.calcExpression(cmd.test);
+            const cond = this.calcExpression(cmd.test, scope);
             if (!cond) break;
-            this.runBlock(cmd.body);
-            this.runBlock(cmd.update);
+            this.runBlock(cmd.body, scope);
+            this.runBlock(cmd.update, scope);
             if (i >= MAX_LOOP) {
               throw new Error(MAX_LOOP + "回の繰り返し上限に達しました");
             }
@@ -924,12 +959,12 @@ export class DNCL3 {
         }
       } else if (cmd.type == "FunctionDeclaration") {
         const name = cmd.id.name;
-        if (this.vars[name] !== undefined) {
+        if (scope.isDefined(name)) {
           throw new Error("すでに宣言済みに名前では関数を定義できません");
         }
-        this.vars[name] = cmd;
+        scope.setVar(name, cmd);
       } else if (cmd.type == "ReturnStatement") {
-        const val = this.calcExpression(cmd.argument);
+        const val = this.calcExpression(cmd.argument, scope);
         throw new Return(val);
       } else if (cmd.type == "BreakStatement") {
         throw new Break();
@@ -939,7 +974,8 @@ export class DNCL3 {
     }
   }
   run() {
-    this.runBlock(this.ast);
+    this.scope = new Scope();
+    this.runBlock(this.ast, this.scope);
     //console.log(this.vars);
   }
   getVarName(ast) {
@@ -949,22 +985,22 @@ export class DNCL3 {
       else throw new Error("非対応の type です " + ast.type);
     }
   }
-  calcExpression(ast) {
+  calcExpression(ast, scope) {
     if (ast.type == "Literal") {
       return ast.value;
     } else if (ast.type == "Identifier") {
-      if (this.vars[ast.name] === undefined) {
+      if (!scope.isDefined(ast.name)) {
         //console.log("var", this.vars)
         throw new Error("初期化されていない変数 " + ast.name + " が使われました");
       }
-      return this.vars[ast.name];
+      return scope.getVar(ast.name);
     } else if (ast.type == "MemberExpression") {
       const name = this.getVarName(ast);
-      if (this.vars[name] === undefined) {
+      if (!scope.isDefined(name)) {
         throw new Error("初期化されていない配列 " + name + " が使われました");
       }
-      const idx = this.getArrayIndex(ast.property);
-      const v = this.vars[name];
+      const idx = this.getArrayIndex(ast.property, scope);
+      const v = scope.getVar(name);
       if (typeof v == "string") {
         if (idx >= 0 && idx < v.length) return v[idx];
         return "";
@@ -972,7 +1008,7 @@ export class DNCL3 {
         return v[idx];
       }
     } else if (ast.type == "UnaryExpression") {
-      const n = this.calcExpression(ast.argument);
+      const n = this.calcExpression(ast.argument, scope);
       if (ast.operator == "not") {
         return !n;
       } else if (ast.operator == "-") {
@@ -981,11 +1017,11 @@ export class DNCL3 {
         throw new Error("対応していない演算子 " + ast.operator + " です");
       }
     } else if (ast.type == "ArrayExpression") {
-      const ar = ast.elements.map(i => this.calcExpression(i));
+      const ar = ast.elements.map(i => this.calcExpression(i, scope));
       return ar;
     } else if (ast.type == "BinaryExpression" || ast.type == "LogicalExpression") {
-      const n = this.calcExpression(ast.left);
-      const m = this.calcExpression(ast.right);
+      const n = this.calcExpression(ast.left, scope);
+      const m = this.calcExpression(ast.right, scope);
       const op = ast.operator;
       if (typeof n == "string" || typeof m == "string") {
         if (op != "+" && op != "==" && op != "!=") throw new Error("文字列では使用できない演算子です: " + op);
@@ -1027,26 +1063,27 @@ export class DNCL3 {
         if (ast.arguments.length > 1) {
           throw new Error("引数の数が合っていません");
         }
-        const q = ast.arguments.length ? this.calcExpression(ast.arguments[0]) : "入力してください";
+        const q = ast.arguments.length ? this.calcExpression(ast.arguments[0], scope) : "入力してください";
         const s = prompt(q);
         if (s == null) return "";
         const f = parseFloat(s);
         if (!isNaN(f) && f.toString() == s) return f;
         return s;
       }
-      if (this.vars[name] === undefined) {
+      if (!scope.isDefined(name)) {
         throw new Error("定義されていない関数 " + name + " が使われました");
       }
-      const func = this.vars[name];
+      const func = scope.getVar(name);
       if (ast.arguments.length != func.params.length) {
         throw new Error("引数の数が合っていません");
       }
+      const scope2 = new Scope(scope);
       for (let i = 0; i < ast.arguments.length; i++) {
         const localvarname = func.params[i].name;
-        this.vars[localvarname] = this.calcExpression(ast.arguments[i]);
+        scope2.setVar(localvarname, this.calcExpression(ast.arguments[i], scope), true);
       }
       try {
-        this.runBlock(func.body);
+        this.runBlock(func.body, scope2);
         throw new Error("関数が値を返しませんでした");
       } catch (e) {
         if (e instanceof Return) {
@@ -1059,11 +1096,14 @@ export class DNCL3 {
     }
   }
   getVars() {
+    const vars = this.scope.vars;
     const res = {};
-    for (const name in this.vars) {
-      const o = this.vars[name];
+    for (const name in vars) {
+      const o = vars[name];
       if (typeof o == "object" && o.type == "FunctionDeclaration") {
         res[name] = "[function]";
+      } else if (typeof o == "function") {
+        res[name] = "[function in js]";
       } else {
         res[name] = o;
       }
