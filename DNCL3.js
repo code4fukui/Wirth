@@ -1054,4 +1054,17 @@ export class DNCL3 {
       throw new Error("対応していない expression type が使われました。 " + ast.type);
     }
   }
+  getVars() {
+    const res = {};
+    for (const name in this.vars) {
+      const o = this.vars[name];
+      console.log(name, typeof o, o.type)
+      if (typeof o == "object" && o.type == "FunctionDeclaration") {
+        res[name] = "[function]";
+      } else {
+        res[name] = o;
+      }
+    }
+    return res;
+  }
 }
