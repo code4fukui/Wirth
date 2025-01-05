@@ -82,7 +82,6 @@ const onchange = () => {
     });
     dncl.run();
     if (chkvar.checked) {
-      console.log(dncl.vars)
       run.setValue(run.getValue() + "\nvars " + JSON.stringify(dncl.getVars(), null, 2) + "\n");
     }
   } catch (e) {
