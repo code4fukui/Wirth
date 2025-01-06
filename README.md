@@ -6,7 +6,7 @@
 
 Wirth (pronounced 'virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
 
-Wirth is a sleek and modern programming language inspired by the renowned creator of Pascal, Niklaus Wirth. It embodies simplicity and elegance, designed to empower education through structured programming.
+Wirth is a sleek and modern programming language inspired by the renowned creator of [Pascal](https://ja.wikipedia.org/wiki/Pascal), [Niklaus Wirth](https://ja.wikipedia.org/wiki/%E3%83%8B%E3%82%AF%E3%83%A9%E3%82%A6%E3%82%B9%E3%83%BB%E3%83%B4%E3%82%A3%E3%83%AB%E3%83%88). It embodies simplicity and elegance, designed to empower education through structured programming.
 
 The source file extension for Wirth is ".wirth", and the MIME type will is "text/wirth".
 

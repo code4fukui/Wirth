@@ -4,7 +4,7 @@
 
 [English](README.md) / [日本語](README_ja.md)
 
-Wirth（ヴィルトと発音します）は、教育用構造化プログラミング言語「Pascal」の開発者であるニコラウス・ヴィルト氏に敬意を表し、その名を冠した2025年生まれの新しいプログラミング言語です。([DNCL3](https://github.com/code4fukui/DNCL3)を元に開発されました。)
+Wirth（ヴィルトと発音します）は、教育用構造化プログラミング言語「[Pascal](https://ja.wikipedia.org/wiki/Pascal)」の開発者である[ニクラウス・ヴィルト氏](https://ja.wikipedia.org/wiki/%E3%83%8B%E3%82%AF%E3%83%A9%E3%82%A6%E3%82%B9%E3%83%BB%E3%83%B4%E3%82%A3%E3%83%AB%E3%83%88)に敬意を表し、その名を冠した2025年生まれの新しいプログラミング言語です。([DNCL3](https://github.com/code4fukui/DNCL3)を元に開発されました。)
 
 シンプルさと優雅さを追求した記述を特徴とし、構造化プログラミングを通じて次世代のコンピューター教育を支えるために設計されています。
 
