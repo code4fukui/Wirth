@@ -2,6 +2,8 @@
 
 ![wirth logo](wirth-logo.png)
 
+[README.md in English](README.md) / [README_ja.md in Japanese](README_ja.md)
+
 Wirth (pronounced 'virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
 
 Wirth is a sleek and modern programming language inspired by the renowned creator of Pascal, Niklaus Wirth. It embodies simplicity and elegance, designed to empower education through structured programming.
@@ -182,7 +184,7 @@ else
 endif
 ```
 
-条件分岐の中で複数の条件で実行する処理を切り替えたい場合は、次のように「else if」を使って条件を追加します。
+To switch between multiple conditions within a conditional branch, you can use "elseif" to add additional conditions as shown below.
 
 ```
 if <condition 1>
@@ -211,7 +213,7 @@ A sequential loop statement repeatedly executes a process while incrementing the
 
 ```
 for <variable> = <initial value> to <end value> step <increment>
-    <process>
+  <process>
 next
 ```
 
