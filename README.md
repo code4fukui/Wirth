@@ -354,7 +354,7 @@ function power(m, n)
 end
 ```
 
-## 8. Comment
+## 7. Comment
 
 - In a single line, any text following "#" is considered a comment and is not executed as part of the code.
 
