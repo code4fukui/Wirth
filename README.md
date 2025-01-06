@@ -1,418 +1,382 @@
-# 手順記述言語 (DNCL3) の仕様
+# Virth - Sleek Structured Programming Language
 
-高等学校におけるアルゴリズムやプログラムに関する教育では、採用されるプログラミング言語は多様で、プログラミングの実習時間も異なります。このような事情を考慮し、[DNCL](https://github.com/code4fukui/DNCL)、[DNCL2](https://github.com/code4fukui/DNCL2)を踏まえた、手順記述言語「DNCL3」を定義します。（ソースファイルの拡張子は .dncl、MIMEタイプは text/dncl とします。）
+Virth (pronounced 'Virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
 
-- ブラウザで動作する実行環境 [DNCL3実行環境](https://code4fukui.github.io/DNCL3/)
-- HTML内で組み込んで動かす例 [DNCL on web](https://code4fukui.github.io/DNCL3/dnclweb.html)
+Virth is a sleek and modern programming language inspired by the renowned creator of Pascal, Niklaus Wirth. It embodies simplicity and elegance, designed to empower education through structured programming.
+
+The source file extension for Virth is ".virth", and the MIME type will is "text/virth".
+
+- Runtime on web [Virth Playground](https://code4fukui.github.io/Virth/)
+- Embedded in HTML [Virth on web](https://code4fukui.github.io/Virth/dnclweb.html)
 ```html
-<script type="module" src="https://code4fukui.github.io/DNCL3/web.js"></script>
-<script type="text/dncl">
+<script type="module" src="https://code4fukui.github.io/Virth/web.js"></script>
+<script type="text/virth">
 sum = 0
-for i = 1 to 10 {
+for i = 1 to 10
   sum = sum + i
-}
+next
 print i
 </script>
 ```
 
-- CLI(Command Line Interface)での実行例: BMI計算 [examples/bmi.dncl](examples/bmi.dncl)
+- CLI(Command Line Interface): calculation BMI [examples/bmi.virth](examples/bmi.virth)
 ```sh
-deno -A https://code4fukui.github.io/DNCL3/cli.js examples/bmi.dncl
+deno -A https://code4fukui.github.io/Virth/cli.js examples/bmi.virth
 ```
 
-- DNCL3実装デバッグ環境 [dncl2js](https://code4fukui.github.io/DNCL3/dncl2js.html)
+- app for debugging [virth2js](https://code4fukui.github.io/Virth/virth2js.html)
 
-※ TODO: 下記は未実装です
-- [二次元以上の配列](https://github.com/code4fukui/DNCL3/issues/2) / [配列のすべてを初期化](https://github.com/code4fukui/DNCL3/issues/3)
+## 1. Variables and Values
 
-## 1 変数と値
+A variable name consists of alphanumeric characters starting with a letter, along with underscores (_) or local characters. However, reserved words (such as print, input, and, or, not, if, else, endif for, to, step, next, do, while, until, end, break, function, return) cannot be used as variable names.
 
-変数名は、英字で始まる英数字と「_」や日本語の並びです。ただし、予約語（print, input, and, or, not, if, else, while, do, until, for, to, step, break, function, return）は変数名として使用できません。
+- ex: n, sum, points
 
-- 例: n, sum, points, 得点
+Variable names written in all uppercase letters represent values that do not change during execution.
 
-すべて大文字の英字による変数は実行中に変化しない値を表します。
+- ex: A, BMI
 
-- 例: A, BMI
+Array elements are specified by an index, starting from 0.
 
-配列の要素は、0から始まる要素の番号を添字で指定します。
+- ex: array[3]
 
-- 例: array[3]
+Numbers are represented in decimal format. Strings are represented as a sequence of characters enclosed in double quotes (").
 
-数値は10進法で表します。文字列は、文字の並びを「"」でくくって表します。
+- ex: 100
+- ex: 99.999
+- ex: "It was found."
 
-- 例: 100
-- 例: 99.999
-- 例: "見つかりました"
-- 例: "It was found."
-
-文字列に0から始まる要素番号を添字で指定すると、先頭が0とした文字を文字列として返します。もし、添字が文字列の範囲外の場合、空文字列「""」を返します。
+When an index starting from 0 is specified for a string, it returns the character at that position as a string, with the first character indexed as 0. If the index is out of range, an empty string ("") is returned.
 
 ```
 s = "ABC"
-print s[0],s[2] # A C と表示される
+print s[0],s[2] # A C is displayed
 ```
 
-## 2 表示文
+## 2. Display Statement
 
-「print」を使って、表示文で数値や文字列や変数の値を表示します。複数の値を表示する場合は「,」で区切って並べます。何も指定しないと1行空きます。
+The "print" statement is used to display numbers, strings, or variable values. When displaying multiple values, separate them with a comma (,"). If nothing is specified, a blank line is printed.
 
-- 例: print n （nが15のとき「15」と表示されます。）
-- 例: print "整いました" （「整いました」と表示されます。）
-- 例: print n, "個見つかった" （nが3のとき、「3 個見つかった」と表示されます。）
-- 例: print "(", x, ",", y, ")" （xが5、yが−1のとき、「( 5 , -1 )」と表示されます。）
-- 例: print （1行空きます。）
+- ex: print n (When n is 15, it displays "15")
+- ex: print "OK" (it displays "OK")
+- ex: print n, " found" (When n is 3, it displays "3 found")
+- ex: print "(", x, ",", y, ")" (When x is 5 and y is −1, it displays "( 5 , -1 )")
+- ex: print (a blank line is printed)
 
-## 3 代入文
+## 3. Assignment Statement
 
-代入文は変数に値を設定します。「=」の左辺に変数または添字付きの配列を、右辺に代入する値を書きます。
+An assignment statement sets a value to a variable. The left side of the "=" should be a variable or an array with an index, and the right side should be the value to assign.
 
-- 例: n = 3
-- 例: points[4] = 100
+- ex: n = 3
+- ex: points[4] = 100
 
-使用されている配列の要素に同じ値をまとめて代入することができます。（[未実装です](https://github.com/code4fukui/DNCL3/issues/3)）
+You can use "[" and "]" along with "," to specify multiple element values at once, allowing them to be replaced.
 
-- 例: points = 0
+- ex: points = [87, 45, 72, 100]
 
-「[」「]」と「,」を使用し、要素のの値をまとめて指定することで、置き換えることができます。
+Multiple assignment statements can be placed side by side, separated by commas ",". In this case, the assignment statements are executed from left to right in order.
 
-- 例: points = [87, 45, 72, 100]
+- ex: sum = n, point = n * (n + 1)
 
-複数の代入文を、「,」で区切りながら、横に並べることができます。この場合は、代入文は左から順に実行されます。
+To assign values entered from external input, you can write the following statement.
 
-- 例: sum = n, point = n * (n + 1)
+- ex: x = input()
+- ex: x = input("Please enter any number between 0 and 100.")
 
-外部から入力された値を代入するために、次のように記述することができます。
+## 4. Operations
 
-- 例: x = input()
-- 例: x = input("0から100までの好きな数を入力してください")
+This section explains arithmetic operations, comparison operations, and logical operations. Comparison operations and their combinations with logical operations can be used as conditions in conditional statements (Section 5.1) and conditional loops (Section 5.2).
 
-## 4 演算
+### 4.1. Arithmetic Operations
 
-この節では、算術演算と比較演算、そして論理演算について説明します。比較演算やそれを組み合わせる論理演算は、条件分岐文（5.1節）や条件繰返し文（5.2節）の〈条件〉で使うことができます。
+The four basic arithmetic operations — addition, subtraction, multiplication, and division — are specified using +, -, *, and /, respectively.
 
-### 4.1 算術演算
+In integer division, the quotient can be calculated using //, and the remainder can be calculated using %.
 
-加減乗除の四則演算は、「+」、「-」、「*」、「/」で指定します。
+- ex: val = 7 / 2 (The value 3.5 is assigned to val.)
+- ex: quo = 7 // 2 (The value 3 is assigned to quo.)
+- ex: remain = 10 % 3 (The value 1 is assigned to remain.)
 
-整数の除算では、商を「//」で、余りを「%」で計算することができます。
+In expressions with multiple operators, operations are generally evaluated from left to right. However, *, /, //, and % have higher precedence than + and -. You can also use parentheses ( and ) to explicitly specify the order of operations.
 
-- 例: val = 7 / 2 　 （valには3.5が代入されます。）
-- 例: quo = 7 // 2 　 （quoには3が代入されます。）
-- 例: remain = 10 % 3 （remainには1が代入されます。）
+- ex: "x = a - b - c" is equals "x = (a - b) - c"
+- ex: "n = 1 + a // 3" is equals "n = 1 + (a // 3)"
+- ex: "ave = (a + b) // 2" is not equals "ave = a + b // 2"
 
-複数の演算子を使った式の計算では、基本的に左側の演算子が先に計算されますが、「*」、「/」、「//」、「%」は、「+」、「-」より先に計算されます。また、丸括弧「(」と「)」で式をくくって、演算の順序を明示することができます。
+For strings, only the + operator can be used in arithmetic operations. If either operand is a string, the values are concatenated as a string.
 
-- 例: x = a - b - c は、x = (a - b) - c と同じです。
-- 例: n = 1 + a // 3 は、n = 1 + (a // 3) と同じです。
-- 例: ave = (a + b) // 2 は、ave = a + b // 2 と異なります。
+### 4.2. Comparison Operations
 
-文字列の算術演算は「+」のみ使用することができます。前後のいずれかが文字列の場合、文字列として連結します。
+Comparison operations for numbers are specified using ==, !=, >, >=, <=, and <. The result of the operation is either true or false.
 
-### 4.2 比較演算
+- ex: n > 3 (When n is greater than 3, it returns true.)
+- ex: n * 2 <= 8 (When twice the value of n is less than or equal to 8, it returns true.)
+- ex: n != 0 (When n is not 0, it returns true.)
 
-数値の比較演算は、「==」、「!=」、「>」、「>=」、「<=」、「<」で指定します。演算結果は、真か偽の値となります。
+String comparison operations can use == and !=. The == operator returns true if the left and right sides are the same string; otherwise, it returns false. The != operator returns true if the left and right sides are different strings; otherwise (when they are the same string), it returns false.
 
-- 例: n > 3 （nが3より大きければ真となります。）
-- 例: n * 2 <= 8 （nの2倍が8以下であれば真となります。）
-- 例: n != 0 （nが0でなければ真となります。）
+- ex: "ABC" == " ABC" (It returns true.)
+- ex: "ABC" == "abc" (It returns false.)
+- ex: "ABC" != "ABC" (It returns true.)
+- ex: "ABC" != "abc" (It returns true.)
 
-文字列の比較演算は、「==」、「!=」を利用することができます。「==」は、左辺と右辺が同じ文字列の場合に真となり、それ以外の場合は偽となります。「!=」は、左辺と右辺が異なる文字列の場合に真となり、それ以外の場合（同じ文字列の場合）は偽となります。
+### 4.3. Logical Operations
 
-- 例: "あいうえお" == "あいうえお" （真となります。）
-- 例: "あいうえお" == "あいう" （偽となります。）
-- 例: "ABC" == " ABC" （真となります。）
-- 例: "ABC" == "abc" （偽となります。）
-- 例: "あいうえお" != "あいうえお" （偽となります。）
-- 例: "あいうえお" !=  "あいう" （真となります。）
-- 例: "ABC" != "ABC" （偽となります。）
-- 例: "ABC" != "abc" （真となります。）
+Logical operations are operations on expressions that return either true or false, and are specified using the operators and, or, and not. The evaluation order is not, and, and then or. For the same operator, the left-hand side is evaluated first. You can also use parentheses ( and ) to explicitly specify the order of operations.
 
-### 4.3 論理演算
+<expression1> and <expression2> returns true if both <expression1> and <expression2> are true; otherwise, it returns false.
 
-論理演算は、真か偽を返す式に対する演算で、「and」、「or」、「not」の演算子で指定します。「not」、「and」、「or」の順で、同一の演算子の場合は左が優先されますが、丸括弧「(」と「)」で、演算の順序を指定することができます。
+<expression1> or <expression2> returns true if either <expression1> or <expression2> is true; otherwise, it returns false.
 
-「〈式1〉 and 〈式2〉」は、〈式1〉と〈式2〉の結果がいずれも真である場合に真となり、それ以外の場合は偽となります。
+not <expression> returns false if <expression> is true, and true if <expression> is false.
 
-「〈式1〉 or 〈式2〉」は、〈式1〉と〈式2〉の結果のどちらかが真である場合に真となり、それ以外の場合は偽となります。
+- ex: n >= 12 and n <= 27 (When n is between 12 and 27, inclusive, it returns true.)
+- ex: n % 2 == 0 or n < 0 (When n is an even number or a negative value, it returns true.)
+- ex: not n > 75 (When n is not greater than 75, it returns true.)
+- ex: "n > 12 and not n < 27" is equals "n > 12 and (not n < 27)"
+- ex: "not n > 12 and n < 27" is eqauls "(not n > 12) and n < 27"
+- ex: "n == 0 or n > 12 and n < 27" is equals "n == 0 or (n > 12 and n < 27)"
 
-「not 〈式〉」は、〈式〉の結果が真である場合に偽となり、偽の場合は真となります。
+## 5. Control Statements
 
-- 例: n >= 12 and n <= 27 （nが12以上27以下なら真となります。）
-- 例: n % 2 == 0 or n < 0 （nが偶数か負の値なら真となります。）
-- 例: not n > 75 （nが75 より大きくなければ真となります。）
-- 例: n > 12 and not n < 27 は、n > 12 and (not n < 27) と同じです。
-- 例: not n > 12 and n < 27 は、(not n > 12) and n < 27 と同じです。
-- 例: n == 0 or n > 12 and n < 27 は、n == 0 or (n > 12 and n < 27) と同じです。（「and」が先に実行されるため。）
+Control statements refer to conditional statements (Section 5.1), sequential loop statements (Section 5.2), conditional loop statements (Section 5.3), and loop interruption (Section 5.4). Comparison operations (Section 4.2) and logical operations (Section 4.3) can be used as conditions within conditional statements and conditional loop statements.
 
-## 5 制御文
+### 5.1. Conditional Statements
 
-条件分岐文（5.1節）や条件繰返し文（5.2節）、順次繰返し文（5.3節）をまとめて制御文と呼びます。制御文の中の〈処理〉として、表示文（2節）、代入文（3節）、値を返さない関数（6.2節）、条件分岐文、順次繰返し文、条件繰返し文を、一つ以上並べて使うことができます。また、条件分岐文や条件繰返し文の中の〈条件〉として、比較演算（4.2節）と論理演算（4.3節）を使用することができます。
+Conditional statements switch the execution flow based on whether a condition is true or false.
 
-### 5.1 条件分岐文
+If the condition is true, a specific process is executed, and if there is no process to execute when the condition is false, it can be specified as follows.
 
-条件分岐文は、〈条件〉が真かどうかによって、実行する処理を切り替えます。
-
-〈条件〉の値が真のときにある処理を実行し、〈条件〉の値が偽のときに実行する処理がない場合は、次のように指定します。
-
-《一般形》
 ```
-if 〈条件〉 {
-  〈処理〉
-}
+if <condition>
+  <process>
+endif
 ```
 
-例:
+ex:
 ```
-if x < 3 {
+if x < 3
   x = x + 1
   y = y - 1
-}
+endif
 ```
 
-〈条件〉の値が真のときにある処理を実行し、〈条件〉の値が偽のときに別の処理を実行する場合は、次のように「else」を組み合わせて指定します。
+o execute a process when the condition is true and a different process when the condition is false, use "else" as follows.
 
-《一般形》
 ```
-if 〈条件〉 {
-  〈処理 1〉
-} else {
-  〈処理 2〉
-}
+if <condition>
+  <process 1>
+else
+  <process 2>
+endif
 ```
 
-例:
+ex:
 ```
-if x < 3 {
+if x < 3
   x = x + 1
-} else {
+else
   x = x - 1
-}
+endif
 ```
 
 条件分岐の中で複数の条件で実行する処理を切り替えたい場合は、次のように「else if」を使って条件を追加します。
 
-《一般形》
 ```
-if 〈条件 1〉 {
-  〈処理 1〉
-} else if 〈条件 2〉 {
-  〈処理 2〉
-} else {
-  〈処理 3〉
-}
+if <condition 1>
+  <process 1>
+elseif <condition 2>
+  <process 2>
+else
+  <process 3>
+endif
 ```
 
-例:
+ex:
 ```
-if x == 3 {
+if x == 3
   x = x + 1
-} else if y > 2 {
+elseif y > 2
   y = y + 1
-} else {
+else
   y = y - 1
-}
+endif
 ```
 
-### 5.2 条件繰返し文
+### 5.2. Sequential Loop Statements
 
-条件繰返し文には、「前判定」と「後判定」の2種類があります。
+A sequential loop statement repeatedly executes a process while incrementing the value of a variable.
 
-#### 5.2.1 前判定
-
-〈条件〉が真の間、〈処理〉を繰り返し実行します。
-
-〈処理〉を実行する前に〈条件〉が成り立つかどうか判定されるため、〈処理〉が1回も実行されないことがあります。
-
-《一般形》
 ```
-while 〈条件〉 {
-  〈処理〉
-}
+for <variable> = <initial value> to <end value> step <increment>
+    <process>
+next
 ```
 
-例:
+A sequential loop statement is executed in the following steps:
+
+1. The initial value is assigned to <variable>.
+2. If the value of <variable> is greater than the <end value>, the loop ends.
+3. The <process> is executed, the <increment> is added to <variable>, and the loop returns to step 2.
+
+ex:
 ```
-while x < 10 {
+for x = 1 to 10 step 1
+  sum = sum + x
+next
+```
+
+If the <increment> is 1, the step part can be omitted.
+
+ex:
+```
+for x = 1 to 10
+  sum = sum + x
+next
+```
+
+If a negative value is specified for <increment>, the value of <variable> decreases from the <initial value>, and the <process> is repeatedly executed until the value becomes less than the <end value>.
+
+ex:
+```
+for x = 10 to 1 step -1
+  sum = sum + x
+next
+```
+
+### 5.3. Conditional Loop Statements
+
+There are two types of conditional loop statements: 'pre-check' and 'post-check'.
+
+#### 5.3.1. pre-check
+
+The <process> is repeatedly executed as long as the <condition> is true.
+
+Since the <condition> is evaluated before executing the <process>, it is possible that the <process> will not be executed even once.
+
+```
+while <condition>
+  <process>
+next
+```
+
+ex:
+```
+while x < 10
   sum = sum + x
   x = x + 1
-}
+next
 ```
 
-#### 5.2.2 後判定
+#### 5.3.2. 後判定
 
-〈条件〉が真になるまで、〈処理〉を繰り返し実行します。
+The <process> is repeatedly executed until the <condition> becomes true.
 
-〈処理〉を実行した後に〈条件〉が成り立つかどうか判定されるため、〈処理〉は少なくとも1回は実行されます。
+Since the <condition> is evaluated after executing the <process>, the <process> is executed at least once.
 
-《一般形》
 ```
-do {
-  〈処理〉
-} until 〈条件〉
+do
+  <process>
+until <condition>
 ```
 
-例:
+ex:
 ```
-do {
+do
   sum = sum + x
   x = x + 1
-} until x >= 10
+until x >= 10
 ```
 
-### 5.3 順次繰返し文
+There is also a do while loop that repeatedly executes the <process> until the <condition> becomes false.
 
-順次繰返し文は、〈変数〉の値を増やしながら、〈処理〉を繰返し実行します。
-
-《一般形》
 ```
-for 〈変数〉 = 〈初期値〉 to 〈終了値〉 step 〈差分〉 {
-  〈処理〉
-}
+do
+  <process>
+while <condition>
 ```
 
-順次繰り返し文は、以下の手順で実行されます。
-1. 〈変数〉に〈初期値〉が代入されます。
-2. 〈変数〉の値が〈終了値〉よりも大きければ、繰り返しを終了します。
-3. 〈処理〉を実行し、〈変数〉の値に〈差分〉を加え、手順2に戻ります。
+### 5.4. Loop Interruption
 
-例:
+Within a loop statement, using break interrupts the loop.
+
 ```
-for x = 1 to 10 step 1 {
-  sum = sum + x
-}
-```
-
-〈差分〉が1の場合、step以降を省略できます。
-
-例:
-```
-for x = 1 to 10 {
-  sum = sum + x
-}
-```
-
-〈差分〉にマイナスの値を指定すると、〈変数〉の値を〈初期値〉から減らしながら、その値が〈終了値〉よりも小さくなるまで、〈処理〉を繰り返し実行します。
-
-例:
-```
-for x = 10 to 1 step -1 {
-  sum = sum + x
-}
-```
-
-### 5.4 繰返しの中断
-
-繰返し文中で、「break」を使用すると繰返しを中断します。
-
-《一般形》
-```
-for 〈変数〉 = 〈初期値〉 to 〈終了値〉 step 〈差分〉 {
-  if 〈条件〉 {
+while <condition>
+  if <condition>
     break
-  }
-  〈処理〉
-}
+  endif
+  <process>
+next
 ```
 
-## 6 関数の呼び出し
+## 6. Functions
 
-関数には、値を返すものと値を返さないものがあります。
+A function is defined as follows.
 
-### 6.1 値を返す関数
-
-問題文の中で
-
-- 指定された値xの二乗の値を返す関数「二乗(x)」を用意する
-- 値mのn乗の値を返す関数「べき乗(m, n)」を用意する
-- 値m以上値n以下の整数をランダムに一つ返す関数「乱数(m, n)」を用意する
-- 値nが奇数のとき真を返し、そうでないとき偽を返す関数「奇数(n)」を用意する
-
-のように定義された関数を、表示文(2節)、代入文(3節)、算術演算（4.1節）、比較演算（4.2節）、あるいは論理演算（4.3節）の中で使うことができます。関数を呼び出すときは、関数名に続き、「(」と「)」の間に引数を書きます。複数の引数を指定する場合は、「,」で区切ります。
-
-- 例: y = 二乗(x) # yにxの二乗が代入されます。
-- 例: z = 二乗(x) ＋ べき乗(x, y) # zにxの二乗とxのy乗の和が代入されます。
-- 例: r = 乱数(1, 6) # rに1から6までの整数のうちいずれかが代入されます。
-
-### 6.2 値を返さない関数
-
-問題文の中で
-
-- 指定された値nを2進法で表示する関数「二進法で表示する(n)」を用意する
-
-のように値を返さない関数が定義されることがあります。
-
-- 例: 二進法で表示する(11) #「1011」と表示されます。
-
-## 7 新しい関数の定義
-
-新しい関数の定義は、DNCL3を用いて次のように記述します。
-
-《一般形》
 ```
-function 〈関数名〉( 〈引数列〉 ) {
-  〈処理〉
-}
+function <function name> ( <parameter list> )
+  <process>
+end
 ```
 
-関数が呼び出される時に引数として与えられる値は、引数列に記述した変数名で利用します。複数の引数を指定する場合は、「,」で区切ります。定義した関数は、用意された関数の呼び出し（6節）と同じ記法で呼び出すことができます。
+When a function is called, the values provided as arguments can be accessed using the variable names specified in the argument list. Multiple arguments can be separated by commas ",". A defined function is called by writing the function name followed by arguments enclosed in parentheses "(" and ")". If multiple arguments are passed, they should be separated by commas ",".
 
-引数列の変数や、関数内で新たに代入された変数は、その関数内でのみ使用できます。
+Variables in the argument list and variables assigned within a function can only be used inside that function.
 
-基本的に関数内で関数外の変数も使用できますが、引数列の変数と同名の関数外の変数は、関数内で使用できません。
+In general, variables declared outside a function can also be accessed within the function. However, if a variable in the argument list has the same name as an external variable, the external variable cannot be used inside the function.
 
-例: 1から正の整数nまでの和を表示する関数「和を表示する(n)」の定義例
+ex: "print_sum(n)" that displays the sum from 1 to a positive integer n
 ```
-function 和を表示する(n) {
+function print_sum(n)
   sum = 0
-  for i = 1 to n {
+  for i = 1 to n
     sum = sum + i
-  }
+  next
   print sum
-}
+end
 ```
 
-例: 値mのn乗の値を表示する関数「べき乗を表示する(m, n)」の定義例
+ex: "print_power(m, n)" that displays the value of m raised to the power of n
 ```
-function べき乗を表示する(m, n) {
+function print_power(m, n)
   p = 1
-  for i = 1 to n {
+  for i = 1 to n
     p = p * m
-  }
+  next
   print p
-}
+end
 ```
 
-「return」を使用して値を返す関数を定義することができます。値を指定せずに「return」を使用すると値を返さず関数内の処理を終えることができます。
+Functions can be defined to return a value using "return". If "return" is used without specifying a value, the function will end its execution without returning any value.
 
-例: 値mのn乗の値を返す関数「べき乗(m, n)」の定義例
+ex: "power(m, n)" that returns the value of m raised to the power of n
 ```
-function べき乗(m, n) {
+function power(m, n)
   p = 1
-  for i = 1 to n {
+  for i = 1 to n
     p = p * m
-  }
+  next
   return p
-}
+end
 ```
 
-## 8 コメント
+## 8. Comment
+
+- In a single line, any text following "#" is considered a comment and is not executed as part of the code.
 
 ```
-atai = 乱数() # 0以上1未満のランダムな小数をataiに代入する
+n = rnd() # assign a random decimal number between 0 (inclusive) and 1 (exclusive) to n
 ```
-- ※1行内において#以降の記述は処理の対象とならない
+
+- Text between #= and =# is treated as a comment and is not executed. If =# is not present, the comment extends to the end of the file.
 
 ```
 #=
-複数行に渡る
-コメントの記述方法
+How to write
+multi-line comments
 =#
 ```
 
-- 「#=」から「=#」までの記述は処理の対象とならない。「=#」がない場合はファイル終端までがコメントとなる。
-
 ## reference
 
-- [共通テスト手順記述標準言語 (DNCL) の説明 独立行政法人大学入試センター 2022年1月](https://www.dnc.ac.jp/albums/abm.php?d=67&f=abm00000819.pdf&n=R4_%E5%85%B1%E9%80%9A%E3%83%86%E3%82%B9%E3%83%88%E6%89%8B%E9%A0%86%E8%A8%98%E8%BF%B0%E6%A8%99%E6%BA%96%E8%A8%80%E8%AA%9E%EF%BC%88DNCL%EF%BC%89%E3%81%AE%E8%AA%AC%E6%98%8E.pdf)
-- [令和７年度大学入学共通テスト 試作問題「情報」の概要 独立行政法人大学入試センター](https://www.dnc.ac.jp/albums/abm.php?d=511&f=abm00003141.pdf&n=6-1_%E6%A6%82%E8%A6%81%E3%80%8C%E6%83%85%E5%A0%B1%E3%80%8D.pdf)
+- [DNCL3](https://github.com/code4fukui/DNCL3)
