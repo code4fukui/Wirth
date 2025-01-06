@@ -1,18 +1,18 @@
-# Virth - Sleek Structured Programming Language
+# Wirth - Sleek Structured Programming Language
 
-![virth logo](virth-logo.webp)
+![wirth logo](wirth-logo.png)
 
-Virth (pronounced 'Virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
+Wirth (pronounced 'virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
 
-Virth is a sleek and modern programming language inspired by the renowned creator of Pascal, Niklaus Wirth. It embodies simplicity and elegance, designed to empower education through structured programming.
+Wirth is a sleek and modern programming language inspired by the renowned creator of Pascal, Niklaus Wirth. It embodies simplicity and elegance, designed to empower education through structured programming.
 
-The source file extension for Virth is ".virth", and the MIME type will is "text/virth".
+The source file extension for Wirth is ".wirth", and the MIME type will is "text/wirth".
 
-- Runtime on web [Virth Playground](https://code4fukui.github.io/Virth/)
-- Embedded in HTML [Virth on web](https://code4fukui.github.io/Virth/dnclweb.html)
+- Runtime on web [Wirth Playground](https://code4fukui.github.io/Wirth/)
+- Embedded in HTML [Wirth on web](https://code4fukui.github.io/Wirth/dnclweb.html)
 ```html
-<script type="module" src="https://code4fukui.github.io/Virth/web.js"></script>
-<script type="text/virth">
+<script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
+<script type="text/wirth">
 sum = 0
 for i = 1 to 10
   sum = sum + i
@@ -21,12 +21,12 @@ print i
 </script>
 ```
 
-- CLI(Command Line Interface): calculation BMI [examples/bmi.virth](examples/bmi.virth)
+- CLI(Command Line Interface): calculation BMI [examples/bmi.wirth](examples/bmi.wirth)
 ```sh
-deno -A https://code4fukui.github.io/Virth/cli.js examples/bmi.virth
+deno -A https://code4fukui.github.io/Wirth/cli.js examples/bmi.wirth
 ```
 
-- app for debugging [virth2js](https://code4fukui.github.io/Virth/virth2js.html)
+- app for debugging [wirth2js](https://code4fukui.github.io/Wirth/wirth2js.html)
 
 ## 1. Variables and Values
 

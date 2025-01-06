@@ -69,7 +69,7 @@ class Scope {
   }
 }
 
-export class Virth {
+export class Wirth {
   constructor(s, callbackoutput) {
     this.s = s.replaceAll("\r", "");
     this.vars = {};

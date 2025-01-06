@@ -4,8 +4,8 @@ import { CSV } from "https://js.sabae.cc/CSV.js";
 const fns = await dir2array("examples");
 const list = [];
 for (const fn of fns) {
-  if (!fn.endsWith(".virth")) continue;
-  if (fn == "test.virth") continue;
+  if (!fn.endsWith(".wirth")) continue;
+  if (fn == "test.wirth") continue;
   const s = await Deno.readTextFile("examples/" + fn);
   const ss = s.split("\n");
   const title = ss[0].substring(1).trim();

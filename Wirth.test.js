@@ -1,10 +1,10 @@
 import * as t from "https://deno.land/std/testing/asserts.ts";
-import { DNCL3 } from "./DNCL3.js";
+import { Wirth } from "./Wirth.js";
 
 const run = (s) => {
   const res = [];
-  const dncl3 = new DNCL3(s, (s) => res.push(s));
-  dncl3.run();
+  const runtime = new Wirth(s, (s) => res.push(s));
+  runtime.run();
   return res;
 };
 

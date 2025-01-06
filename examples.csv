@@ -1,20 +1,20 @@
 ﻿fn,title
-print.virth,1. print value
-var.virth,2. variables and calculation
-varja.virth,3. var name by Japanese
-const.virth,4. constant
-if.virth,5. if condition
-elseif.virth,6. if / elseif condition
-input.virth,7. input
-string.virth,8. string
-bmi.virth,9. BMI calculation
-array.virth,10. array
-for.virth,11. for - Sequential Loop Statements
-while.virth,12. while - pre-check loop
-dountil.virth,13. do until - post-check loop
-comment.virth,14. comment
-func.virth,15. function
-funcja.virth,16. function in Japanese
-printbin.virth,17. print binary
-geo3x3.virth,18. encode and decode of Geo3x3
-scope.virth,19. scope of variable
+print.wirth,1. print value
+var.wirth,2. variables and calculation
+varja.wirth,3. var name by Japanese
+const.wirth,4. constant
+if.wirth,5. if condition
+elseif.wirth,6. if / elseif condition
+input.wirth,7. input
+string.wirth,8. string
+bmi.wirth,9. BMI calculation
+array.wirth,10. array
+for.wirth,11. for - Sequential Loop Statements
+while.wirth,12. while - pre-check loop
+dountil.wirth,13. do until - post-check loop
+comment.wirth,14. comment
+func.wirth,15. function
+funcja.wirth,16. function in Japanese
+printbin.wirth,17. print binary
+geo3x3.wirth,18. encode and decode of Geo3x3
+scope.wirth,19. scope of variable
