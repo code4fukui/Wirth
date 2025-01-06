@@ -2,7 +2,7 @@
 
 ![wirth logo](wirth-logo.png)
 
-[README.md in English](README.md) / [README_ja.md in Japanese](README_ja.md)
+[English](README.md) / [日本語](README_ja.md)
 
 Wirth (pronounced 'virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
 

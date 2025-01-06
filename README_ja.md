@@ -2,7 +2,7 @@
 
 ![wirth logo](wirth-logo.png)
 
-[README.md in English](README.md) / [README_ja.md in Japanese](README_ja.md)
+[English](README.md) / [日本語](README_ja.md)
 
 Wirth（ヴィルトと発音します）は、教育用構造化プログラミング言語「Pascal」の開発者であるニコラウス・ヴィルト氏に敬意を表し、その名を冠した2025年生まれの新しいプログラミング言語です。([DNCL3](https://github.com/code4fukui/DNCL3)を元に開発されました。)
 
