@@ -1,21 +1,20 @@
 ﻿fn,title
-print.dncl,1. 値の表示 print
-var.dncl,2. 変数と計算
-varja.dncl,3. 日本語の変数と計算
-const.dncl,4. 定数
-if.dncl,5. 条件文 if
-elseif.dncl,6. 条件文 if / else if
-input.dncl,7. 値の入力 input
-string.dncl,8. 文字列
-bmi.dncl,9. BMI計算
-array.dncl,10. 配列
-for.dncl,11. 順次繰り返し for
-while.dncl,12. 前判定繰り返し while
-dowhile.dncl,13. 後判定繰り返し do while
-dountil.dncl,14. 後判定繰り返し do until
-comment.dncl,15. コメント
-func.dncl,16. 関数の定義と呼び出し function
-funcja.dncl,17. 日本語の関数の定義と呼び出し function
-printbin.dncl,18. 二進法で表示
-geo3x3.dncl,19. Geo3x3のエンコード、デコード
-scope.dncl,20. 変数のスコープ
+print.virth,1. print value
+var.virth,2. variables and calculation
+varja.virth,3. var name by Japanese
+const.virth,4. constant
+if.virth,5. if condition
+elseif.virth,6. if / elseif condition
+input.virth,7. input
+string.virth,8. string
+bmi.virth,9. BMI calculation
+array.virth,10. array
+for.virth,11. for - Sequential Loop Statements
+while.virth,12. while - pre-check loop
+dountil.virth,13. do until - post-check loop
+comment.virth,14. comment
+func.virth,15. function
+funcja.virth,16. function in Japanese
+printbin.virth,17. print binary
+geo3x3.virth,18. encode and decode of Geo3x3
+scope.virth,19. scope of variable

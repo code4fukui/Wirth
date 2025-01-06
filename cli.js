@@ -1,5 +1,5 @@
-import { DNCL3 } from "./DNCL3.js";
+import { Virth } from "./Virth.js";
 
 const fn = Deno.args[0];
 const s = await Deno.readTextFile(fn);
-new DNCL3(s).run();
+new Virth(s).run();

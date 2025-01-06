@@ -1,5 +1,7 @@
 # Virth - Sleek Structured Programming Language
 
+![virth logo](virth-logo.webp)
+
 Virth (pronounced 'Virt') is an easy-to-learn, sleek structured programming language. (forked [DNCL3](https://github.com/code4fukui/DNCL3))
 
 Virth is a sleek and modern programming language inspired by the renowned creator of Pascal, Niklaus Wirth. It embodies simplicity and elegance, designed to empower education through structured programming.
@@ -268,7 +270,7 @@ while x < 10
 next
 ```
 
-#### 5.3.2. 後判定
+#### 5.3.2. post-check
 
 The <process> is repeatedly executed until the <condition> becomes true.
 
@@ -286,14 +288,6 @@ do
   sum = sum + x
   x = x + 1
 until x >= 10
-```
-
-There is also a do while loop that repeatedly executes the <process> until the <condition> becomes false.
-
-```
-do
-  <process>
-while <condition>
 ```
 
 ### 5.4. Loop Interruption

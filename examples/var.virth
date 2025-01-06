@@ -1,4 +1,4 @@
-# 2. 変数と計算
+# 2. variables and calculation
 a = 3.2
 b = 5
 c = a * b

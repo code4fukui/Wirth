@@ -1,6 +1,0 @@
-# 16. 関数の定義と呼び出し function
-function add(a, b) {
-  return a + b
-}
-
-print add(10, 5)

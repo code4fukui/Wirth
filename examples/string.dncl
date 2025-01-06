@@ -1,5 +1,0 @@
-# 8. 文字列
-s = "ABC"
-print s
-print s[5] + "_"
-print s[0],s[2] # A C と表示される

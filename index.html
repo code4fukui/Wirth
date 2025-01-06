@@ -1,15 +1,15 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
-<title>DNCL3実行環境</title>
+<title>Virth Playground</title>
 </head><body>
-<h1>DNCL3実行環境</h1>
+<h1>Virth Playground</h1>
 
-サンプル <select id=selexamples></select> <label><input type=checkbox id=chkvar>実行後に変数表示</label>
+examples <select id=selexamples></select> <label><input type=checkbox id=chkvar>show vars after run</label>
 <main>
 <div class=diveditor id=divprog></div>
 <div class=diveditor id=divrun></div>
 </main>
 
-<a href=https://github.com/code4fukui/DNCL3/blob/main/README.md>DNCL3言語仕様</a> <a href=https://github.com/code4fukui/DNCL3/>src on GitHub</a>
+<a href=https://github.com/code4fukui/Virth/blob/main/README.md>Virth Language Reference</a> <a href=https://github.com/code4fukui/Virth/>src on GitHub</a>
 
 <style>
 h1 {
@@ -27,7 +27,7 @@ a {
 </style>
 
 <script type="module">
-import { DNCL3 } from "./DNCL3.js";
+import { Virth } from "./Virth.js";
 import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
 import { CSV } from "https://js.sabae.cc/CSV.js";
 
@@ -77,12 +77,12 @@ const onchange = () => {
   run.setValue("");
   run.revealLine(1);
   try {
-    const dncl = new DNCL3(src, (s) => {
+    const runtime = new Virth(src, (s) => {
       run.setValue(run.getValue() + s + "\n");
     });
-    dncl.run();
+    runtime.run();
     if (chkvar.checked) {
-      run.setValue(run.getValue() + "\nvars " + JSON.stringify(dncl.getVars(), null, 2) + "\n");
+      run.setValue(run.getValue() + "\nvars " + JSON.stringify(runtime.getVars(), null, 2) + "\n");
     }
   } catch (e) {
     console.log(e);
@@ -113,7 +113,7 @@ selexamples.oninput = async () => {
   onchange();
 };
 
-const fn = "print.dncl";
+const fn = "print.virth";
 const fn0 = location.hash.substring(1) || fn;
 selexamples.value = fn0;
 selexamples.oninput();

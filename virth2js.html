@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
-<title>DNCL3 → AST → like JavaScript → output</title>
+<title>Virth → AST → like JavaScript → output</title>
 </head><body>
-<h1>DNCL3 → AST → like JavaScript → output</h1>
+<h1>Virth → AST → like JavaScript → output</h1>
 <main>
 <div class=diveditor id=divprog></div>
 <div class=diveditor id=divast></div>
@@ -9,7 +9,7 @@
 <div class=diveditor id=divrun></div>
 </main>
 
-<a href=https://github.com/code4fukui/DNCL3/>src on GitHub</a>
+<a href=https://github.com/code4fukui/Virth/>src on GitHub</a>
 
 <style>
 h1 {
@@ -27,7 +27,7 @@ a {
 </style>
 
 <script type="module">
-import { DNCL3 } from "./DNCL3.js";
+import { Virth } from "./Virth.js";
 import escodegen from "https://code4fukui.github.io/escodegen/escodegen.js";
 import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
 
@@ -77,16 +77,16 @@ let bkval = null;
 const onchange = () => {
   const src = prog.getValue();
   try {
-    const dncl = new DNCL3(src, (s) => {
+    const runtime = new Virth(src, (s) => {
       run.setValue(run.getValue() + s + "\n");
     });
-    const astjson = dncl.ast;
+    const astjson = runtime.ast;
     removeStartEnd(astjson);
     ast.setValue(JSON.stringify(astjson, null, 2));
     prog2.setValue(escodegen.generate(astjson));
 
     run.setValue("");
-    dncl.run();    
+    runtime.run();    
   } catch (e) {
     console.log(e);
     //ast.setValue(JSON.stringify(e, null, 2));
@@ -116,10 +116,11 @@ setInterval(() => {
 //const fn = "comment";
 //const fn = "input";
 //const fn = "test";
-const fn = "print";
+//const fn = "elseif";
+const fn = "func";
 
 const fn0 = location.hash.substring(1) || fn;
-const firstprog = await (await fetch("examples/" + fn0 + ".dncl")).text();
+const firstprog = await (await fetch("examples/" + fn0 + ".virth")).text();
 
 prog.setValue(firstprog);
 onchange();

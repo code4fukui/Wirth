@@ -1,10 +1,10 @@
-import { DNCL3 } from "./DNCL3.js";
+import { Virth } from "./Virth.js";
 
-const scrs = document.querySelectorAll(`script[type="text/dncl"]`);
+const scrs = document.querySelectorAll(`script[type="text/virth"]`);
 for (const scr of scrs) {
   const src = scr.textContent;
-  const dncl = new DNCL3(src, (s) => {
+  const runtime = new Virth(src, (s) => {
     alert(s);
   });
-  dncl.run();
+  runtime.run();
 }

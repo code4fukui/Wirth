@@ -1,4 +1,4 @@
-# 7. 値の入力 input
+# 7. input
 x = input()
 print "input", x
 x = input("二乗します")
