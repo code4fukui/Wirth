@@ -32,7 +32,7 @@ deno -A https://code4fukui.github.io/Wirth/cli.js examples/bmi.wirth
 
 ## 1. 変数と値
 
-変数名は、英字で始まる英数字と「_」や日本語の並びです。ただし、予約語（print, input, and, or, not, if, else, while, do, until, for, to, step, break, function, return）は変数名として使用できません。
+変数名は、英字で始まる英数字と「_」や日本語の並びです。ただし、予約語（print, input, and, or, not, if, else, elseif, endif, for, to, step, next, do, while, until, break, function, end, return）は変数名として使用できません。
 
 - 例: n, sum, points, 得点
 
