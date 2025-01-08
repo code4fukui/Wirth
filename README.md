@@ -165,7 +165,7 @@ if x < 3
 endif
 ```
 
-o execute a process when the condition is true and a different process when the condition is false, use "else" as follows.
+To execute a process when the condition is true and a different process when the condition is false, use "else" as follows.
 
 ```
 if <condition>
