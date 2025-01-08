@@ -11,7 +11,7 @@ Wirth（ヴィルトと発音します）は、教育用構造化プログラミ
 Wirthのソースファイル拡張子は「.wirth」であり、MIMEタイプは「text/wirth」となります。
 
 - ブラウザで動作する実行環境 [Wirth Playground](https://code4fukui.github.io/Wirth/)
-- HTMLへの組み込み例 [Wirth on web](https://code4fukui.github.io/Wirth/dnclweb.html)
+- HTMLへの組み込み例 [Wirth on web](https://code4fukui.github.io/Wirth/wirthweb.html)
 ```html
 <script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
 <script type="text/wirth">

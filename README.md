@@ -11,7 +11,7 @@ Wirth is a sleek and modern programming language inspired by the renowned creato
 The source file extension for Wirth is ".wirth", and the MIME type will is "text/wirth".
 
 - Runtime on web [Wirth Playground](https://code4fukui.github.io/Wirth/)
-- Embedded in HTML [Wirth on web](https://code4fukui.github.io/Wirth/dnclweb.html)
+- Embedded in HTML [Wirth on web](https://code4fukui.github.io/Wirth/wirthweb.html)
 ```html
 <script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
 <script type="text/wirth">
