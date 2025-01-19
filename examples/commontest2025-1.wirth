@@ -1,0 +1,10 @@
+# 22. common test 2025 1
+Akibi = [0, 5, 3, 4]
+buinsu = 3
+tantou = 1
+for buin = 2 to buinsu
+  if Akibi[buin] < Akibi[tantou]
+    tantou = buin
+  endif
+next
+print "次の工芸品の担当は部員", tantou, "です"

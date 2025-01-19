@@ -19,3 +19,7 @@ printbin.wirth,17. print binary
 geo3x3.wirth,18. encode and decode of Geo3x3
 scope.wirth,19. scope of variable
 recursive.wirth,21. recursive call Fibonacci
+commontest2025-1.wirth,22. common test 2025 1
+commontest2025-1_ja.wirth,23. common test 2025 1 (日本語変数)
+commontest2025-2.wirth,24. common test 2025 2
+commontest2025-2_ja.wirth,25. common test 2025 2 (日本語変数)

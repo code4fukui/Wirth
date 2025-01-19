@@ -1,0 +1,18 @@
+# 24. common test 2025 2
+Nissu = [0, 4, 1, 3, 1, 3, 4, 2, 4, 3]
+kougeihinsu = 9
+Akibi = [0, 1, 1, 1]
+buinsu = 3
+for kougeihin = 1 to kougeihinsu
+  tantou = 1
+  for buin = 2 to buinsu
+    if Akibi[buin] < Akibi[tantou]
+      tantou = buin
+    endif
+  next
+  print "工芸品", kougeihin, "...",
+    "部員", tantou, ":",
+    Akibi[tantou], "日目〜",
+    Akibi[tantou] + Nissu[kougeihin] - 1, "日目"
+  Akibi[tantou] = Akibi[tantou] + Nissu[kougeihin]
+next
