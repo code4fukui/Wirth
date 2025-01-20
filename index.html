@@ -46,6 +46,9 @@ export const makeEditor = (div, language) => {
     //formatOnPaste: true,
     //formatOnType: true,
 
+    fontSize: 16, // for mobile
+    lineHeight: 24,
+
     suggestOnTriggerCharacters: false,  // トリガーキャラクターでの補完を無効化
     acceptSuggestionOnEnter: 'off',     // Enterでの補完選択を無効化
     parameterHints: false,              // パラメータヒントを無効化
