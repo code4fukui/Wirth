@@ -1,0 +1,3 @@
+# 26. import functions
+function rnd from "./rnd.js"
+print rnd(100)
