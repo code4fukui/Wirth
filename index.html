@@ -85,7 +85,7 @@ const removeStartEnd = (json) => {
 };
 
 let bkval = null;
-const onchange = () => {
+const onchange = async () => {
   const src = prog.getValue();
   run.setValue("");
   run.revealLine(1);
@@ -93,7 +93,7 @@ const onchange = () => {
     const runtime = new Wirth(src, (s) => {
       run.setValue(run.getValue() + s + "\n");
     });
-    runtime.run();
+    await runtime.run();
     if (chkvar.checked) {
       run.setValue(run.getValue() + "\nvars " + JSON.stringify(runtime.getVars(), null, 2) + "\n");
     }

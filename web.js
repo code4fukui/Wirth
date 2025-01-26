@@ -6,5 +6,5 @@ for (const scr of scrs) {
   const runtime = new Wirth(src, (s) => {
     alert(s);
   });
-  runtime.run();
+  await runtime.run();
 }

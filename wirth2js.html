@@ -74,7 +74,7 @@ const removeStartEnd = (json) => {
 };
 
 let bkval = null;
-const onchange = () => {
+const onchange = async () => {
   const src = prog.getValue();
   try {
     const runtime = new Wirth(src, (s) => {
@@ -86,7 +86,7 @@ const onchange = () => {
     prog2.setValue(escodegen.generate(astjson));
 
     run.setValue("");
-    runtime.run();    
+    await runtime.run();
   } catch (e) {
     console.log(e);
     //ast.setValue(JSON.stringify(e, null, 2));
