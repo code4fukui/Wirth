@@ -5,6 +5,7 @@
 
 examples <select id=selexamples></select>
 <label><input type=checkbox id=chkvar checked>show vars after run</label>
+<button id=btnrun>RUN</button>
 <button id=btnstop>STOP</button>
 <main>
 <div class=diveditor id=divprog></div>
@@ -118,6 +119,8 @@ const onchange = async () => {
   }
   running = false;
 };
+
+btnrun.onclick = () => onchange();
 
 //prog.onDidChangeModelContent = onchange; // なぜか初回のみ
 let bkval = null;
