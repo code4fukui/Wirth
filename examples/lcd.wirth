@@ -1,0 +1,12 @@
+# 27. Euclidean Algorithm (LCD)
+n <- input()
+m <- input()
+while 1
+  r = n % m
+  if r = 0
+    break
+  endif
+  n = m
+  m = r
+next
+print m

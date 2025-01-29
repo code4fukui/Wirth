@@ -24,3 +24,4 @@ commontest2025-1_ja.wirth,23. common test 2025 1 (日本語変数)
 commontest2025-2.wirth,24. common test 2025 2
 commontest2025-2_ja.wirth,25. common test 2025 2 (日本語変数)
 import.wirth,26. import functions
+lcd.wirth,27. Euclidean Algorithm (LCD)

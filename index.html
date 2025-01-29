@@ -121,10 +121,10 @@ const onchange = async () => {
 
 //prog.onDidChangeModelContent = onchange; // なぜか初回のみ
 let bkval = null;
-setInterval(() => {
+setInterval(async () => {
   const txt = prog.getValue();
   if (bkval == txt) return;
-  onchange();
+  await onchange();
   bkval = txt;
 }, 500);
 
@@ -140,7 +140,6 @@ selexamples.oninput = async () => {
   location.hash = fn;
   const s = await (await fetch("examples/" + fn)).text();
   prog.setValue(s);
-  onchange();
 };
 
 const fn = "print.wirth";
