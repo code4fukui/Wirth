@@ -3,7 +3,9 @@
 </head><body>
 <h1>Wirth Playground</h1>
 
-examples <select id=selexamples></select> <label><input type=checkbox id=chkvar checked>show vars after run</label>
+examples <select id=selexamples></select>
+<label><input type=checkbox id=chkvar checked>show vars after run</label>
+<button id=btnstop>STOP</button>
 <main>
 <div class=diveditor id=divprog></div>
 <div class=diveditor id=divrun></div>
@@ -84,8 +86,16 @@ const removeStartEnd = (json) => {
   }
 };
 
-let bkval = null;
+let running = false;
+let abortctrl = null;
 const onchange = async () => {
+  console.log("onchange", performance.now())
+  if (running) {
+    //abortctrl.abort();
+    return;
+  }
+  abortctrl = new AbortController();
+  running = true;
   const src = prog.getValue();
   run.setValue("");
   run.revealLine(1);
@@ -93,7 +103,11 @@ const onchange = async () => {
     const runtime = new Wirth(src, (s) => {
       run.setValue(run.getValue() + s + "\n");
     });
-    await runtime.run();
+    const maxloop = 0; // chkmaxloop.checked ? inmaxloop.value : 0;
+    btnstop.onclick = () => {
+      abortctrl.abort();
+    };
+    await runtime.run(maxloop, abortctrl.signal);
     if (chkvar.checked) {
       run.setValue(run.getValue() + "\nvars " + JSON.stringify(runtime.getVars(), null, 2) + "\n");
     }
@@ -102,14 +116,16 @@ const onchange = async () => {
     //ast.setValue(JSON.stringify(e, null, 2));
     run.setValue(run.getValue() + e.toString() + "\n");
   }
-  bkval = src;
+  running = false;
 };
 
 //prog.onDidChangeModelContent = onchange; // なぜか初回のみ
+let bkval = null;
 setInterval(() => {
   const txt = prog.getValue();
   if (bkval == txt) return;
   onchange();
+  bkval = txt;
 }, 500);
 
 const data = await CSV.fetchJSON("examples.csv");
