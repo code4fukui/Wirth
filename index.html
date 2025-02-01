@@ -9,7 +9,10 @@ examples <select id=selexamples></select>
 <button id=btnstop>STOP</button>
 <main>
 <div class=diveditor id=divprog></div>
-<div class=diveditor id=divrun></div>
+<div>
+  <div class=diveditor id=divrun></div>
+  <input type=text id=ininput disabled>
+</div>
 </main>
 
 <a href=https://github.com/code4fukui/Wirth/blob/main/README.md>Wirth Language Reference</a>
@@ -22,11 +25,27 @@ body {
 h1 {
   margin: 0;
 }
-.diveditor {
+main > div {
   width: calc(50% - .5em);
   padding: .1em;
+  vertical-align: top;
+  display: inline-block;
+}
+.diveditor {
   display: inline-block;
   height: calc(100vh - 8em);
+}
+.diveditor#divrun {
+  width: 100%;
+  height: calc(100vh - 8em - 3.5em);
+}
+main input {
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 16px;
+  height: 2.8em;
+  margin: .1em 0;
+  padding: 0.3em 0.3em;
 }
 a {
   color: gray !important;
@@ -87,10 +106,29 @@ const removeStartEnd = (json) => {
   }
 };
 
+const input = (s) => {
+  if (ininput.reject) {
+    ininput.reject();
+  }
+  ininput.disabled = false;
+  ininput.value = "";
+  ininput.placeholder = s || "Please input here.";
+  const p = new Promise((resolve, reject) => {
+    ininput.reject = reject;
+    ininput.onkeyup = (e) => {
+      if (e.key == "Enter") {
+        resolve(ininput.value);
+        ininput.disabled = true;
+      }
+    };
+  });
+  return p;
+};
+
 let running = false;
 let abortctrl = null;
 const onchange = async () => {
-  console.log("onchange", performance.now())
+  //console.log("onchange", performance.now(), running)
   if (running) {
     //abortctrl.abort();
     return;
@@ -101,9 +139,10 @@ const onchange = async () => {
   run.setValue("");
   run.revealLine(1);
   try {
-    const runtime = new Wirth(src, (s) => {
+    const output = (s) => {
       run.setValue(run.getValue() + s + "\n");
-    });
+    };
+    const runtime = new Wirth(src, output, input);
     const maxloop = 0; // chkmaxloop.checked ? inmaxloop.value : 0;
     btnstop.onclick = () => {
       abortctrl.abort();
@@ -127,8 +166,8 @@ let bkval = null;
 setInterval(async () => {
   const txt = prog.getValue();
   if (bkval == txt) return;
-  await onchange();
   bkval = txt;
+  await onchange();
 }, 500);
 
 const data = await CSV.fetchJSON("examples.csv");
