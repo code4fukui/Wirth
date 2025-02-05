@@ -1,0 +1,12 @@
+# 28. Magic Circle
+Mahou <- 0
+N <- 3
+x <- 1, y <- 2, Mahou[x][y] <- 1
+for z <- 2 to N * N
+  if Mahou[(x + 1) % N][(y + 1) % N] = 0
+    x <- (x + 1) % N, y <- (y + 1) % N
+  else
+    y <- (y - 1 + N) % N 
+  endif
+  Mahou[x][y] <- z
+next
