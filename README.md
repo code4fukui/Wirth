@@ -15,9 +15,9 @@ The source file extension for Wirth is ".wirth", and the MIME type will is "text
 ```html
 <script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
 <script type="text/wirth">
-sum = 0
-for i = 1 to 10
-  sum = sum + i
+sum <- 0
+for i <- 1 to 10
+  sum <- sum + i
 next
 print i
 </script>
@@ -53,7 +53,7 @@ Numbers are represented in decimal format. Strings are represented as a sequence
 When an index starting from 0 is specified for a string, it returns the character at that position as a string, with the first character indexed as 0. If the index is out of range, an empty string ("") is returned.
 
 ```
-s = "ABC"
+s <- "ABC"
 print s[0],s[2] # A C is displayed
 ```
 
@@ -69,23 +69,27 @@ The "print" statement is used to display numbers, strings, or variable values. W
 
 ## 3. Assignment Statement
 
-An assignment statement sets a value to a variable. The left side of the "=" should be a variable or an array with an index, and the right side should be the value to assign.
+An assignment statement sets a value to a variable. The left side of the "<-"(assign) should be a variable or an array with an index, and the right side should be the value to assign.
 
-- ex: n = 3
-- ex: points[4] = 100
+- ex: n <- 3
+- ex: points[4] <- 100
+
+After assigning a value to a variable, you can use it as an array, and it will be used as the initial value for each element of the array.
+
+- ex: points <- 0 (After assignment, displaying points[1] will show "0")
 
 You can use "[" and "]" along with "," to specify multiple element values at once, allowing them to be replaced.
 
-- ex: points = [87, 45, 72, 100]
+- ex: points <- [87, 45, 72, 100]
 
 Multiple assignment statements can be placed side by side, separated by commas ",". In this case, the assignment statements are executed from left to right in order.
 
-- ex: sum = n, point = n * (n + 1)
+- ex: sum <- n, point <- n * (n + 1)
 
 To assign values entered from external input, you can write the following statement.
 
-- ex: x = input()
-- ex: x = input("Please enter any number between 0 and 100.")
+- ex: x <- input()
+- ex: x <- input("Please enter any number between 0 and 100.")
 
 ## 4. Operations
 
@@ -97,30 +101,30 @@ The four basic arithmetic operations — addition, subtraction, multiplication, 
 
 In integer division, the quotient can be calculated using //, and the remainder can be calculated using %.
 
-- ex: val = 7 / 2 (The value 3.5 is assigned to val.)
-- ex: quo = 7 // 2 (The value 3 is assigned to quo.)
-- ex: remain = 10 % 3 (The value 1 is assigned to remain.)
+- ex: val <- 7 / 2 (The value 3.5 is assigned to val.)
+- ex: quo <- 7 // 2 (The value 3 is assigned to quo.)
+- ex: remain <- 10 % 3 (The value 1 is assigned to remain.)
 
 In expressions with multiple operators, operations are generally evaluated from left to right. However, *, /, //, and % have higher precedence than + and -. You can also use parentheses ( and ) to explicitly specify the order of operations.
 
-- ex: "x = a - b - c" is equals "x = (a - b) - c"
-- ex: "n = 1 + a // 3" is equals "n = 1 + (a // 3)"
-- ex: "ave = (a + b) // 2" is not equals "ave = a + b // 2"
+- ex: "x <- a - b - c" is equals "x <- (a - b) - c"
+- ex: "n <- 1 + a // 3" is equals "n <- 1 + (a // 3)"
+- ex: "ave <- (a + b) // 2" is not equals "ave <- a + b // 2"
 
 For strings, only the + operator can be used in arithmetic operations. If either operand is a string, the values are concatenated as a string.
 
 ### 4.2. Comparison Operations
 
-Comparison operations for numbers are specified using ==, !=, >, >=, <=, and <. The result of the operation is either true or false.
+Comparison operations for numbers are specified using =, !=, >, >=, <=, and <. The result of the operation is either true or false.
 
 - ex: n > 3 (When n is greater than 3, it returns true.)
 - ex: n * 2 <= 8 (When twice the value of n is less than or equal to 8, it returns true.)
 - ex: n != 0 (When n is not 0, it returns true.)
 
-String comparison operations can use == and !=. The == operator returns true if the left and right sides are the same string; otherwise, it returns false. The != operator returns true if the left and right sides are different strings; otherwise (when they are the same string), it returns false.
+String comparison operations can use = and !=. The = operator returns true if the left and right sides are the same string; otherwise, it returns false. The != operator returns true if the left and right sides are different strings; otherwise (when they are the same string), it returns false.
 
-- ex: "ABC" == " ABC" (It returns true.)
-- ex: "ABC" == "abc" (It returns false.)
+- ex: "ABC" = " ABC" (It returns true.)
+- ex: "ABC" = "abc" (It returns false.)
 - ex: "ABC" != "ABC" (It returns true.)
 - ex: "ABC" != "abc" (It returns true.)
 
@@ -135,11 +139,11 @@ Logical operations are operations on expressions that return either true or fals
 not <expression> returns false if <expression> is true, and true if <expression> is false.
 
 - ex: n >= 12 and n <= 27 (When n is between 12 and 27, inclusive, it returns true.)
-- ex: n % 2 == 0 or n < 0 (When n is an even number or a negative value, it returns true.)
+- ex: n % 2 = 0 or n < 0 (When n is an even number or a negative value, it returns true.)
 - ex: not n > 75 (When n is not greater than 75, it returns true.)
 - ex: "n > 12 and not n < 27" is equals "n > 12 and (not n < 27)"
 - ex: "not n > 12 and n < 27" is eqauls "(not n > 12) and n < 27"
-- ex: "n == 0 or n > 12 and n < 27" is equals "n == 0 or (n > 12 and n < 27)"
+- ex: "n = 0 or n > 12 and n < 27" is equals "n = 0 or (n > 12 and n < 27)"
 
 ## 5. Control Statements
 
@@ -160,8 +164,8 @@ endif
 ex:
 ```
 if x < 3
-  x = x + 1
-  y = y - 1
+  x <- x + 1
+  y <- y - 1
 endif
 ```
 
@@ -178,9 +182,9 @@ endif
 ex:
 ```
 if x < 3
-  x = x + 1
+  x <- x + 1
 else
-  x = x - 1
+  x <- x - 1
 endif
 ```
 
@@ -198,12 +202,12 @@ endif
 
 ex:
 ```
-if x == 3
-  x = x + 1
+if x = 3
+  x <- x + 1
 elseif y > 2
-  y = y + 1
+  y <- y + 1
 else
-  y = y - 1
+  y <- y - 1
 endif
 ```
 
@@ -212,7 +216,7 @@ endif
 A sequential loop statement repeatedly executes a process while incrementing the value of a variable.
 
 ```
-for <variable> = <initial value> to <end value> step <increment>
+for <variable> <- <initial value> to <end value> step <increment>
   <process>
 next
 ```
@@ -225,8 +229,8 @@ A sequential loop statement is executed in the following steps:
 
 ex:
 ```
-for x = 1 to 10 step 1
-  sum = sum + x
+for x <- 1 to 10 step 1
+  sum <- sum + x
 next
 ```
 
@@ -234,8 +238,8 @@ If the <increment> is 1, the step part can be omitted.
 
 ex:
 ```
-for x = 1 to 10
-  sum = sum + x
+for x <- 1 to 10
+  sum <- sum + x
 next
 ```
 
@@ -243,8 +247,8 @@ If a negative value is specified for <increment>, the value of <variable> decrea
 
 ex:
 ```
-for x = 10 to 1 step -1
-  sum = sum + x
+for x <- 10 to 1 step -1
+  sum <- sum + x
 next
 ```
 
@@ -267,8 +271,8 @@ next
 ex:
 ```
 while x < 10
-  sum = sum + x
-  x = x + 1
+  sum <- sum + x
+  x <- x + 1
 next
 ```
 
@@ -287,8 +291,8 @@ until <condition>
 ex:
 ```
 do
-  sum = sum + x
-  x = x + 1
+  sum <- sum + x
+  x <- x + 1
 until x >= 10
 ```
 
@@ -324,9 +328,9 @@ In general, variables declared outside a function can also be accessed within th
 ex: "print_sum(n)" that displays the sum from 1 to a positive integer n
 ```
 function print_sum(n)
-  sum = 0
-  for i = 1 to n
-    sum = sum + i
+  sum <- 0
+  for i <- 1 to n
+    sum <- sum + i
   next
   print sum
 end
@@ -335,9 +339,9 @@ end
 ex: "print_power(m, n)" that displays the value of m raised to the power of n
 ```
 function print_power(m, n)
-  p = 1
-  for i = 1 to n
-    p = p * m
+  p <- 1
+  for i <- 1 to n
+    p <- p * m
   next
   print p
 end
@@ -348,9 +352,9 @@ Functions can be defined to return a value using "return". If "return" is used w
 ex: "power(m, n)" that returns the value of m raised to the power of n
 ```
 function power(m, n)
-  p = 1
-  for i = 1 to n
-    p = p * m
+  p <- 1
+  for i <- 1 to n
+    p <- p * m
   next
   return p
 end
@@ -361,7 +365,7 @@ end
 - In a single line, any text following "#" is considered a comment and is not executed as part of the code.
 
 ```
-n = rnd() # assign a random decimal number between 0 (inclusive) and 1 (exclusive) to n
+n <- rnd() # assign a random decimal number between 0 (inclusive) and 1 (exclusive) to n
 ```
 
 - Text between #= and =# is treated as a comment and is not executed. If =# is not present, the comment extends to the end of the file.
