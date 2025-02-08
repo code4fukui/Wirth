@@ -36,19 +36,15 @@ A variable name consists of alphanumeric characters starting with a letter, alon
 
 - ex: n, sum, points
 
-Variable names written in all uppercase letters represent values that do not change during execution.
-
-- ex: A, BMI
-
-Array elements are specified by an index, starting from 0.
-
-- ex: array[3]
-
 Numbers are represented in decimal format. Strings are represented as a sequence of characters enclosed in double quotes (").
 
 - ex: 100
 - ex: 99.999
 - ex: "It was found."
+
+Array elements are specified by an index, starting from 0.
+
+- ex: array[3]
 
 When an index starting from 0 is specified for a string, it returns the character at that position as a string, with the first character indexed as 0. If the index is out of range, an empty string ("") is returned.
 
@@ -56,6 +52,14 @@ When an index starting from 0 is specified for a string, it returns the characte
 s <- "ABC"
 print s[0],s[2] # A C is displayed
 ```
+
+Object elements are specified by a name following ".".
+
+- ex: obj.prop
+
+Variable names written in all uppercase letters represent values that do not change during execution.
+
+- ex: A, BMI
 
 ## 2. Display Statement
 
@@ -78,9 +82,13 @@ After assigning a value to a variable, you can use it as an array, and it will b
 
 - ex: points <- 0 (After assignment, displaying points[1] will show "0")
 
-You can use "[" and "]" along with "," to specify multiple element values at once, allowing them to be replaced.
+You can use "[" and "]" along with "," to assign multiple element values at once.
 
 - ex: points <- [87, 45, 72, 100]
+
+You can use "{" and "}" along with "," to assign multiple named elements at once.
+
+- ex: member <- { name: "taro", age: 8 }
 
 Multiple assignment statements can be placed side by side, separated by commas ",". In this case, the assignment statements are executed from left to right in order.
 
