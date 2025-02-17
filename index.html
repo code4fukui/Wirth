@@ -149,7 +149,7 @@ const onchange = async () => {
     };
     await runtime.run(maxloop, abortctrl.signal);
     if (chkvar.checked) {
-      run.setValue(run.getValue() + "\nvars " + JSON.stringify(runtime.getVars(), null, 2) + "\n");
+      run.setValue(run.getValue() + "\n" + runtime.getVars() + "\n");
     }
   } catch (e) {
     console.log(e);
