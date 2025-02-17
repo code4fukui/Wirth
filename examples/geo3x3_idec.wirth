@@ -1,0 +1,146 @@
+# 31. Geo3x3_decode without float
+
+function create(val, n)
+  res <- []
+  for i = 1 to n
+    res[i - 1] = 0
+  next
+  res[0] = val // 100
+  res[1] = val // 10 % 10
+  res[2] = val % 10
+  return res
+end
+
+function norm(a)
+  n <- a.length
+  for i <- n - 1 to 1 step -1
+    a[i - 1] <- a[i - 1] + a[i] // 10
+    a[i] <- a[i] % 10
+  next
+end
+
+function add(a, b, c)
+  n <- a.length
+  for i <- 0 to n - 1
+    c[i] <- a[i] + b[i]
+  next
+  norm(c)
+end
+
+function sub(a, b, c)
+  n <- a.length
+  for i <- n - 1 to 0 step -1
+    if a[i] < b[i] and i > 0
+      a[i - 1] <- a[i - 1] - 1
+      a[i] <- a[i] + 10
+    endif
+    c[i] = a[i] - b[i]
+  next
+end
+
+function xmul(a, x)
+  n <- a.length
+  for i <- n - 1 to 0 step -1
+    a[i] = a[i] * x
+  next
+  norm(a)
+end
+
+function xdiv(a, x)
+  n <- a.length
+  for i <- 0 to n - 1
+    d <- a[i] % x
+    a[i] <- a[i] // x
+    if i < n - 1
+      a[i + 1] <- a[i + 1] + d * 10
+    endif
+  next
+end
+
+function divx(a, b)
+  n <- a.length
+  a2 = []
+  c = []
+  for i <- 0 to n - 1
+    a2[i] = a[i]
+    c[i] = 0
+  next
+  x = 0
+  while 1
+    sub(a2, b, c)
+    if c[0] < 0
+      return x
+    endif
+    x <- x + 1
+    a2b(c, a2)
+  next
+end
+
+function a2b(a, b)
+  n <- a.length
+  for i <- 0 to n - 1
+    b[i] = a[i]
+  next
+end
+
+function char2n(c)
+  if c == "0"
+    return 0
+  elseif c == "1"
+    return 1
+  elseif c == "2"
+    return 2
+  elseif c == "3"
+    return 3
+  elseif c == "4"
+    return 4
+  elseif c == "5"
+    return 5
+  elseif c == "6"
+    return 6
+  elseif c == "7"
+    return 7
+  elseif c == "8"
+    return 8
+  elseif c == "9"
+    return 9
+  endif
+  return -1
+end
+
+function Geo3x3_decode(s)
+  n <- 9
+  flg <- 0
+  if s[0] = "W"
+    flg <- 1
+  endif
+  unit <- create(180, n)
+  lat <- create(0, n)
+  lng <- create(0, n)
+  temp <- create(0, n)
+  level <- 1
+  for j <- 1 to s.length - 1
+    m <- char2n(s[j]) - 1
+    xdiv(unit, 3)
+    a2b(unit, temp)
+    xmul(temp, m % 3)
+    add(lng, temp, lng)
+    a2b(unit, temp)
+    xmul(temp, m // 3)
+    add(lat, temp, lat)
+    level <- level + 1
+  next
+  a2b(unit, temp)
+  xdiv(temp, 2)
+  add(lat, temp, lat)
+  add(lng, temp, lng)
+  n90 = create(90, n)
+  sub(lat, n90, lat)
+  if flg
+    n180 = create(180, n)
+    sub(lng, n180, lng)
+  endif
+  return [lat, lng, level, unit]
+end
+
+print Geo3x3_decode("E9139659937288")
