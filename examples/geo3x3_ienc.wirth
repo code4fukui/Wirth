@@ -2,12 +2,12 @@
 
 function create(val, n)
   res <- []
-  for i = 1 to n
-    res[i - 1] = 0
+  for i <- 1 to n
+    res[i - 1] <- 0
   next
-  res[0] = val // 100
-  res[1] = val // 10 % 10
-  res[2] = val % 10
+  res[0] <- val // 100
+  res[1] <- val // 10 % 10
+  res[2] <- val % 10
   return res
 end
 
@@ -34,14 +34,14 @@ function sub(a, b, c)
       a[i - 1] <- a[i - 1] - 1
       a[i] <- a[i] + 10
     endif
-    c[i] = a[i] - b[i]
+    c[i] <- a[i] - b[i]
   next
 end
 
 function xmul(a, x)
   n <- a.length
   for i <- n - 1 to 0 step -1
-    a[i] = a[i] * x
+    a[i] <- a[i] * x
   next
   norm(a)
 end
@@ -59,13 +59,13 @@ end
 
 function divx(a, b)
   n <- a.length
-  a2 = []
-  c = []
+  a2 <- []
+  c <- []
   for i <- 0 to n - 1
-    a2[i] = a[i]
-    c[i] = 0
+    a2[i] <- a[i]
+    c[i] <- 0
   next
-  x = 0
+  x <- 0
   while 1
     sub(a2, b, c)
     if c[0] < 0
@@ -79,7 +79,7 @@ end
 function a2b(a, b)
   n <- a.length
   for i <- 0 to n - 1
-    b[i] = a[i]
+    b[i] <- a[i]
   next
 end
 
@@ -87,21 +87,21 @@ function Geo3x3_encode(lat, lng, level)
   n <- lat.length
   lat[1] <- lat[1] + 9
   norm(lat)
-  code = ""
+  code <- ""
   if lng[0] >= 0
-    code = "E"
+    code <- "E"
   else
-    code = "W"
-    n180 = create(180, n)
+    code <- "W"
+    n180 <- create(180, n)
     add(lng, n180, lng)
   endif
-  temp = create(0, n)
+  temp <- create(0, n)
   unit <- create(180, n)
   for j <- 1 to level - 1
     xdiv(unit, 3)
     y <- divx(lat, unit)
     x <- divx(lng, unit)
-    code = code + (x + y * 3 + 1)
+    code <- code + (x + y * 3 + 1)
     a2b(unit, temp)
     xmul(temp, x)
     sub(lng, temp, lng)
