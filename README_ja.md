@@ -8,27 +8,7 @@ Wirth（ヴィルトと発音します）は、教育用構造化プログラミ
 
 シンプルさと優雅さを追求した記述を特徴とし、構造化プログラミングを通じて次世代のコンピューター教育を支えるために設計されています。
 
-Wirthのソースファイル拡張子は「.wirth」であり、MIMEタイプは「text/wirth」となります。
-
 - ブラウザで動作する実行環境 [Wirth Playground](https://code4fukui.github.io/Wirth/)
-- HTMLへの組み込み例 [Wirth on web](https://code4fukui.github.io/Wirth/wirthweb.html)
-```html
-<script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
-<script type="text/wirth">
-sum <- 0
-for i <- 1 to 10
-  sum <- sum + i
-next
-print i
-</script>
-```
-
-- CLI(Command Line Interface): BMI計算 [examples/bmi.wirth](examples/bmi.wirth)
-```sh
-deno -A https://code4fukui.github.io/Wirth/cli.js examples/bmi.wirth
-```
-
-- デバッグ用アプリ [wirth2js](https://code4fukui.github.io/Wirth/wirth2js.html)
 
 ## 1. 変数と値
 
@@ -392,6 +372,29 @@ n <- rnd() # 0以上1未満のランダムな小数をnに代入する
 コメントの記述方法
 =#
 ```
+
+## 付録
+
+Wirthのソースファイル拡張子は「.wirth」であり、MIMEタイプは「text/wirth」となります。
+
+- HTMLへの組み込み例 [Wirth on web](https://code4fukui.github.io/Wirth/wirthweb.html)
+```html
+<script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
+<script type="text/wirth">
+sum <- 0
+for i <- 1 to 10
+  sum <- sum + i
+next
+print i
+</script>
+```
+
+- CLI(Command Line Interface): BMI計算 [examples/bmi.wirth](examples/bmi.wirth)
+```sh
+deno -A https://code4fukui.github.io/Wirth/cli.js examples/bmi.wirth
+```
+
+- デバッグ用アプリ [wirth2js](https://code4fukui.github.io/Wirth/wirth2js.html)
 
 ## reference
 

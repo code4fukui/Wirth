@@ -8,27 +8,7 @@ Wirth (pronounced 'virt') is an easy-to-learn, sleek structured programming lang
 
 Wirth is a sleek and modern programming language inspired by the renowned creator of [Pascal](https://ja.wikipedia.org/wiki/Pascal), [Niklaus Wirth](https://ja.wikipedia.org/wiki/%E3%83%8B%E3%82%AF%E3%83%A9%E3%82%A6%E3%82%B9%E3%83%BB%E3%83%B4%E3%82%A3%E3%83%AB%E3%83%88). It embodies simplicity and elegance, designed to empower education through structured programming.
 
-The source file extension for Wirth is ".wirth", and the MIME type will is "text/wirth".
-
 - Runtime on web [Wirth Playground](https://code4fukui.github.io/Wirth/)
-- Embedded in HTML [Wirth on web](https://code4fukui.github.io/Wirth/wirthweb.html)
-```html
-<script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
-<script type="text/wirth">
-sum <- 0
-for i <- 1 to 10
-  sum <- sum + i
-next
-print i
-</script>
-```
-
-- CLI(Command Line Interface): calculation BMI [examples/bmi.wirth](examples/bmi.wirth)
-```sh
-deno -A https://code4fukui.github.io/Wirth/cli.js examples/bmi.wirth
-```
-
-- app for debugging [wirth2js](https://code4fukui.github.io/Wirth/wirth2js.html)
 
 ## 1. Variables and Values
 
@@ -384,6 +364,29 @@ How to write
 multi-line comments
 =#
 ```
+
+## appendix
+
+The source file extension for Wirth is ".wirth", and the MIME type will is "text/wirth".
+
+- Embedded in HTML [Wirth on web](https://code4fukui.github.io/Wirth/wirthweb.html)
+```html
+<script type="module" src="https://code4fukui.github.io/Wirth/web.js"></script>
+<script type="text/wirth">
+sum <- 0
+for i <- 1 to 10
+  sum <- sum + i
+next
+print i
+</script>
+```
+
+- CLI(Command Line Interface): calculation BMI [examples/bmi.wirth](examples/bmi.wirth)
+```sh
+deno -A https://code4fukui.github.io/Wirth/cli.js examples/bmi.wirth
+```
+
+- app for debugging [wirth2js](https://code4fukui.github.io/Wirth/wirth2js.html)
 
 ## reference
 
