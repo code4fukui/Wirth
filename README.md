@@ -247,7 +247,6 @@ There are two types of conditional loop statements: 'pre-check' and 'post-check'
 #### 5.3.1. pre-check
 
 The <process> is repeatedly executed as long as the <condition> is true.
-
 Since the <condition> is evaluated before executing the <process>, it is possible that the <process> will not be executed even once.
 
 ```
@@ -267,7 +266,6 @@ next
 #### 5.3.2. post-check
 
 The <process> is repeatedly executed until the <condition> becomes true.
-
 Since the <condition> is evaluated after executing the <process>, the <process> is executed at least once.
 
 ```
