@@ -12,7 +12,7 @@ Wirth（ヴィルトと発音します）は、教育用構造化プログラミ
 
 ## 1. 変数と値
 
-変数名は、英字で始まる英数字と「_」や日本語の並びです。ただし、予約語（print, input, and, or, not, if, else, elseif, endif, for, to, step, next, do, while, until, break, function, end, return）は変数名として使用できません。
+変数名は、英字で始まる英数字と「_」や日本語の並びです。ただし、以下の単語（print, input, and, or, not, if, else, elseif, endif, for, to, step, next, do, while, until, break, function, end, return）は、変数名として使用できません。
 
 - 例: n, sum, points, 得点
 
