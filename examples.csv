@@ -27,5 +27,6 @@ import.wirth,26. import functions
 lcd.wirth,27. Euclidean Algorithm (LCD)
 magiccircle.wirth,28. Magic Circle
 object.wirth,29. object
-geo3x3_ienc.wirth,30. Geo3x3_encode with integer
-geo3x3_idec.wirth,31. Geo3x3_decode with integer
+geo3x3_ienc.wirth,30. Geo3x3_encode without float
+geo3x3_idec.wirth,31. Geo3x3_decode without float
+f503i.wirth,33. control F503i by Webembot.js
