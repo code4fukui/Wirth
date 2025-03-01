@@ -2,7 +2,7 @@
 function Webembot from "https://code4fukui.github.io/Webembot/Webembot.js"
 function sleep from "https://js.sabae.cc/sleep.js"
 
-emb = Webembot.create()
+emb <- Webembot.create()
 while 1
   emb.led(1, 1)
   sleep(500)
