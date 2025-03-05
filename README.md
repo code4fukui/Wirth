@@ -170,7 +170,7 @@ endif
 ex:
 ```
 if x = 3
-  x <- x + 1
+  x <- x - 1
 else
   y <- y * 2
 endif
