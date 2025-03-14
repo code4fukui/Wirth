@@ -3,10 +3,13 @@
 </head><body>
 <h1>Wirth Playground</h1>
 
-examples <select id=selexamples></select>
-<label><input type=checkbox id=chkvar checked>show vars after run</label>
+examples <select id=selexamples>
+  <option value="">-</option>
+</select>
 <button id=btnrun>RUN</button>
 <button id=btnstop>STOP</button>
+<label><input type=checkbox id=chkautorun checked>auto run</label>
+<label><input type=checkbox id=chkvar checked>show vars</label>
 <main>
 <div class=diveditor id=divprog></div>
 <div>
@@ -62,6 +65,7 @@ a {
 import { Wirth } from "./Wirth.js";
 import { monaco } from "https://code4fukui.github.io/monaco-editor/monaco.js";
 import { CSV } from "https://js.sabae.cc/CSV.js";
+import { removeHash } from "https://js.sabae.cc/removeHash.js";
 
 export const makeEditor = (div, language) => {
   const editor = monaco.editor.create(div, {
@@ -92,8 +96,8 @@ export const makeEditor = (div, language) => {
   return editor;
 };
 
-const prog = makeEditor(divprog, "");
-const run = makeEditor(divrun, "");
+const prog = makeEditor(divprog);
+const run = makeEditor(divrun);
 
 const removeStartEnd = (json) => {
   for (const name in json) {
@@ -127,7 +131,7 @@ const input = (s) => {
 
 let running = false;
 let abortctrl = null;
-const onchange = async () => {
+const runScript = async () => {
   //console.log("onchange", performance.now(), running)
   if (running) {
     //abortctrl.abort();
@@ -158,8 +162,11 @@ const onchange = async () => {
   }
   running = false;
 };
+const onchange = async () => {
+  if (chkautorun.checked) runScript();
+};
 
-btnrun.onclick = () => onchange();
+btnrun.onclick = () => runScript();
 
 //prog.onDidChangeModelContent = onchange; // なぜか初回のみ
 let bkval = null;
@@ -179,12 +186,17 @@ for (const item of data) {
 }
 selexamples.oninput = async () => {
   const fn = selexamples.value;
+  if (!fn) {
+    removeHash();
+    return;
+  }
   location.hash = fn;
   const s = await (await fetch("examples/" + fn)).text();
   prog.setValue(s);
 };
 
-const fn = "print.wirth";
+//const fn = "print.wirth";
+const fn = "";
 const fn0 = location.hash.substring(1) || fn;
 selexamples.value = fn0;
 selexamples.oninput();
