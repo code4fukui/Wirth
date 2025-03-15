@@ -12,7 +12,7 @@ Wirth is a sleek and modern programming language inspired by the renowned creato
 
 ## 1. Variables and Values
 
-A variable name consists of alphanumeric characters starting with a letter, along with underscores (_) or local characters. However, reserved words (such as print, input, and, or, not, if, else, elseif, endif, for, to, step, next, do, while, until, break, function, end, return) cannot be used as variable names.
+A variable name consists of alphanumeric characters starting with a letter, along with underscores (_) or local characters. However, reserved words (such as print, input, and, or, not, if, else, elseif, endif, for, to, step, next, do, while, until, break, function, end, return, null) cannot be used as variable names.
 
 - ex: n, sum, points
 
