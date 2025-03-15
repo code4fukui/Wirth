@@ -1,25 +1,29 @@
 # 33. list
 function tostr(list)
+  list <- list.link
+  if not list
+    return ""
+  endif
+
   s <- ""
-  list = list.link
   do
     s <- s + " " + list.name
-    list = list.link
+    list <- list.link
   until not list
   return s
 end
 
 function insert(list, obj)
-  obj.link = list.link
-  list.link = obj
+  obj.link <- list.link
+  list.link <- obj
 end
 
 function append(list, obj)
   while list.link
-    list = list.link
+    list <- list.link
   next
-  obj.link = null
-  list.link = obj
+  obj.link <- null
+  list.link <- obj
 end
 
 function search(list, name)
@@ -27,7 +31,7 @@ function search(list, name)
     if list.name = name
       return list
     endif
-    list = list.link
+    list <- list.link
   until not list
   return ""
 end
@@ -35,16 +39,19 @@ end
 function remove(list, obj)
   do
     if list.link = obj
-      list.link = obj.link
+      list.link <- obj.link
       return
     endif
-    list = list.link
+    list <- list.link
   until not list
 end
 
 list <- { link: null }
+print "list:", tostr(list)
 append(list, { name: "A" })
+print "list:", tostr(list)
 append(list, { name: "B" })
+print "list:", tostr(list)
 insert(list, { name: "@" })
 print "list:", tostr(list)
 print "search B:", search(list, "B")
@@ -53,5 +60,6 @@ remove(list, search(list, "B"))
 print "list:", tostr(list)
 append(list, { name: "C" })
 print "list:", tostr(list)
+print "search C:", search(list, "C")
 insert(list, { name: "_" })
 print "list:", tostr(list)
