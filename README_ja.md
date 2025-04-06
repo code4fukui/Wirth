@@ -1,7 +1,7 @@
 # Wirth - 削ぎ落とした構造化プログラミング言語
 
 ![wirth logo](logo/wirth-logo.png)
-logo designed by Towa
+logo and character designed by Towa ([https://code4fukui.github.io/Wirth/logo/](images))
 
 [English](README.md) / [日本語](README_ja.md)
 
