@@ -1,7 +1,7 @@
 # Wirth - Sleek Structured Programming Language
 
 ![wirth logo](logo/wirth-logo.png)
-logo and character designed by Towa ([https://code4fukui.github.io/Wirth/logo/](images))
+logo and character designed by Towa ([images](https://code4fukui.github.io/Wirth/logo/))
 
 [English](README.md) / [日本語](README_ja.md)
 
